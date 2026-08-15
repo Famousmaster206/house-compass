@@ -1,21 +1,25 @@
 /**
- * Thin client for the separate backend (Flask app at repo root: app.py).
+ * Thin client for the separate backend (Flask app in backend/app.py).
  *
- * The backend currently exposes no JSON API; it only renders a static
- * placeholder page. This client exists so the data/service layer
- * (lib/data/*, lib/services/*) has one place to swap from local static
- * data to real HTTP calls later, without touching call sites elsewhere
- * in the app.
- *
- * Configure the backend origin via NEXT_PUBLIC_API_BASE_URL. Left unset,
- * isApiConfigured() returns false and callers should fall back to local
- * sample data.
+ * Two ways to point this at a real backend:
+ *  - Local dev: set NEXT_PUBLIC_API_BASE_URL to the Flask dev server origin
+ *    (e.g. http://localhost:5000). Requests go cross-origin (CORS-enabled
+ *    on the Flask side).
+ *  - Vercel deploy (this repo's vercel.json "services" config): leave
+ *    NEXT_PUBLIC_API_BASE_URL unset and set NEXT_PUBLIC_API_SAME_ORIGIN=1
+ *    instead. Requests go to relative /api/... paths on the same domain,
+ *    which vercel.json rewrites to the backend service. This deliberately
+ *    isn't inferred automatically — an unset base URL with no same-origin
+ *    flag means "no backend available" (e.g. a plain `next dev` with no
+ *    Flask process running), so the calculator/results pages fall back to
+ *    local static data instead of erroring.
  */
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/+$/, "") ?? "";
+const SAME_ORIGIN = process.env.NEXT_PUBLIC_API_SAME_ORIGIN === "1";
 
 export function isApiConfigured(): boolean {
-  return API_BASE_URL.length > 0;
+  return API_BASE_URL.length > 0 || SAME_ORIGIN;
 }
 
 export class ApiError extends Error {
@@ -35,7 +39,7 @@ export class ApiError extends Error {
  */
 export async function apiGet<T>(path: string, init?: RequestInit): Promise<T> {
   if (!isApiConfigured()) {
-    throw new ApiError("Backend API is not configured (NEXT_PUBLIC_API_BASE_URL unset)");
+    throw new ApiError("Backend API is not configured (no NEXT_PUBLIC_API_BASE_URL or NEXT_PUBLIC_API_SAME_ORIGIN)");
   }
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
@@ -49,7 +53,7 @@ export async function apiGet<T>(path: string, init?: RequestInit): Promise<T> {
 
 export async function apiPost<T>(path: string, body: unknown, init?: RequestInit): Promise<T> {
   if (!isApiConfigured()) {
-    throw new ApiError("Backend API is not configured (NEXT_PUBLIC_API_BASE_URL unset)");
+    throw new ApiError("Backend API is not configured (no NEXT_PUBLIC_API_BASE_URL or NEXT_PUBLIC_API_SAME_ORIGIN)");
   }
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...init,

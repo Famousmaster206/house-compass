@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, AlertCircle, Loader } from "lucide-react";
+import Link from "next/link";
+import { Sparkles, AlertCircle, Loader, SlidersHorizontal } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
@@ -18,6 +19,12 @@ export function AiOverview({ input, result }: AiOverviewProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [hasRequested, setHasRequested] = useState(false);
+
+  const whatIfParams = new URLSearchParams({
+    city: result.citySlug,
+    income: String(input.monthlyIncome),
+    ...(input.userProvidedRent ? { rent: String(input.userProvidedRent) } : {}),
+  });
 
   const fetchOverview = async () => {
     setLoading(true);
@@ -81,13 +88,20 @@ export function AiOverview({ input, result }: AiOverviewProps) {
         )}
 
         {overview && !loading && (
-          <div className="mt-4 space-y-3 text-sm text-text">
-            {overview.split("\n").map((paragraph, idx) => (
-              <p key={idx} className="leading-relaxed">
-                {paragraph}
-              </p>
-            ))}
-          </div>
+          <>
+            <div className="mt-4 space-y-3 text-sm text-text">
+              {overview.split("\n").map((paragraph, idx) => (
+                <p key={idx} className="leading-relaxed">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+            <Link href={`/what-if?${whatIfParams.toString()}`} className="mt-4 inline-block">
+              <Button variant="primary">
+                <SlidersHorizontal size={16} aria-hidden="true" /> See what changes could help
+              </Button>
+            </Link>
+          </>
         )}
 
         {!overview && !loading && hasRequested && !error && (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { Card } from "@/components/ui/Card";
@@ -28,11 +29,32 @@ const BASE: CalculatorInput = {
   citySlug: "phoenix",
 };
 
+/**
+ * Reads optional starting values from the URL (?city=&income=&rent=), so
+ * other pages (AI overview CTAs, property summary) can deep-link into a
+ * pre-filled scenario instead of always starting from BASE.
+ */
+function useInitialScenario() {
+  const params = useSearchParams();
+  return useMemo(() => {
+    const cityParam = params.get("city");
+    const incomeParam = params.get("income");
+    const rentParam = params.get("rent");
+    return {
+      citySlug: cityParam && cities.some((c) => c.slug === cityParam) ? cityParam : BASE.citySlug,
+      income: incomeParam && Number(incomeParam) > 0 ? Number(incomeParam) : BASE.monthlyIncome,
+      rent: rentParam && Number(rentParam) > 0 ? Number(rentParam) : undefined,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // read once on mount — sliders take over after that
+}
+
 export function WhatIfView() {
   const reducedMotion = usePrefersReducedMotion();
-  const [citySlug, setCitySlug] = useState(BASE.citySlug);
-  const [income, setIncome] = useState(BASE.monthlyIncome);
-  const [rent, setRent] = useState<number | undefined>(undefined);
+  const initial = useInitialScenario();
+  const [citySlug, setCitySlug] = useState(initial.citySlug);
+  const [income, setIncome] = useState(initial.income);
+  const [rent, setRent] = useState<number | undefined>(initial.rent);
   const [roommates, setRoommates] = useState(BASE.roommates);
   const [hasCar, setHasCar] = useState(BASE.hasCar);
   const [diningBudget, setDiningBudget] = useState(BASE.diningBudget);

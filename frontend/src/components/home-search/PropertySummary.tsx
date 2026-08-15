@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -17,11 +18,32 @@ import {
   Loader2,
   MapPin,
   Search,
+  SlidersHorizontal,
   Sparkles,
 } from "lucide-react";
 import { searchSaleListings, generateAiPropertyOverview, ApiError, isApiConfigured, type SaleListing } from "@/lib/api/client";
 import { formatCurrency } from "@/lib/utils/format";
+import { getCityBySlug } from "@/lib/data/cities";
 import type { HomeSearchAnswers } from "@/components/home-search/PreferenceWizard";
+
+/**
+ * When the user didn't pick a city in the quiz ("Not sure yet"), suggest one
+ * from their other answers instead of defaulting silently to Phoenix. Simple,
+ * transparent rules — not ML — matching the same spirit as the listings
+ * ranking heuristic in the backend.
+ */
+function suggestCitySlug(answers: HomeSearchAnswers | null): string {
+  if (!answers) return "phoenix";
+  if (answers.citySlug) return answers.citySlug;
+
+  const highBudget = answers.budget.includes("1.25M");
+  if (answers.style === "Resort-style" || (highBudget && answers.priority !== "Low-water landscaping")) {
+    return "scottsdale";
+  }
+  if (answers.rhythm === "Dining & design") return "tempe";
+  if (answers.priority === "Low-water landscaping") return "tucson";
+  return "phoenix";
+}
 
 const gallery = [
   ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85", "Desert modern home exterior"],
@@ -65,6 +87,8 @@ export function PropertySummary({
   const [status, setStatus] = useState<Status>("loading");
   const [listing, setListing] = useState<SaleListing | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const suggestedSlug = suggestCitySlug(answers);
+  const suggestedCity = getCityBySlug(suggestedSlug);
 
   useEffect(() => {
     let cancelled = false;
@@ -77,7 +101,12 @@ export function PropertySummary({
       setStatus("loading");
       try {
         const maxBudget = answers ? parseBudgetLabel(answers.budget) : undefined;
-        const result = await searchSaleListings({ city: "Phoenix", state: "AZ", maxBudget, limit: 20 });
+        const result = await searchSaleListings({
+          city: suggestedCity?.name ?? "Phoenix",
+          state: "AZ",
+          maxBudget,
+          limit: 20,
+        });
         if (cancelled) return;
         if (result.listings.length === 0) {
           setStatus("empty");
@@ -95,7 +124,7 @@ export function PropertySummary({
     return () => {
       cancelled = true;
     };
-  }, [answers]);
+  }, [answers, suggestedCity?.name]);
 
   if (status === "loading") {
     return (
@@ -158,8 +187,15 @@ export function PropertySummary({
           <ArrowLeft size={17} />Start a new search
         </button>
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#e9f0e5] px-4 py-2 text-sm font-extrabold text-[#35543d]">
-            <Compass size={16} />Your top House Compass match
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#e9f0e5] px-4 py-2 text-sm font-extrabold text-[#35543d]">
+              <Compass size={16} />Your top House Compass match
+            </div>
+            {answers && !answers.citySlug && suggestedCity && (
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#fbeee0] px-4 py-2 text-sm font-semibold text-[#a5581f]">
+                <MapPin size={14} />We suggested {suggestedCity.name} based on your answers
+              </div>
+            )}
           </div>
           <button className="inline-flex items-center gap-2 rounded-full border border-[#dcd6cb] bg-white px-4 py-2 text-sm font-bold text-[#4e5e53] transition hover:border-[#d66732] hover:text-[#c65f2e]">
             <Heart size={17} />Save home
@@ -201,7 +237,7 @@ export function PropertySummary({
               ))}
             </div>
 
-            <PropertyAiOverview listing={listing} monthlyPayment={monthlyPayment} />
+            <PropertyAiOverview listing={listing} monthlyPayment={monthlyPayment} citySlug={suggestedSlug} />
           </div>
 
           <aside className="rounded-[2rem] bg-[#243b2f] p-7 text-white shadow-xl shadow-[#243b2f]/15">
@@ -243,7 +279,15 @@ export function PropertySummary({
   );
 }
 
-function PropertyAiOverview({ listing, monthlyPayment }: { listing: SaleListing; monthlyPayment: number }) {
+function PropertyAiOverview({
+  listing,
+  monthlyPayment,
+  citySlug,
+}: {
+  listing: SaleListing;
+  monthlyPayment: number;
+  citySlug: string;
+}) {
   const [overview, setOverview] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -304,11 +348,19 @@ function PropertyAiOverview({ listing, monthlyPayment }: { listing: SaleListing;
       )}
 
       {overview && !loading && (
-        <div className="mt-4 space-y-3 text-sm leading-relaxed text-[#3a4e40]">
-          {overview.split("\n").filter(Boolean).map((paragraph, idx) => (
-            <p key={idx}>{paragraph}</p>
-          ))}
-        </div>
+        <>
+          <div className="mt-4 space-y-3 text-sm leading-relaxed text-[#3a4e40]">
+            {overview.split("\n").filter(Boolean).map((paragraph, idx) => (
+              <p key={idx}>{paragraph}</p>
+            ))}
+          </div>
+          <Link
+            href={`/what-if?city=${citySlug}&rent=${monthlyPayment}`}
+            className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#d66732] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#e17840]"
+          >
+            <SlidersHorizontal size={16} aria-hidden="true" /> See full cost breakdown
+          </Link>
+        </>
       )}
 
       {!hasRequested && (

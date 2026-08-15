@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import { WhatIfView } from "@/components/calculator/WhatIfView";
 
 export default function WhatIfPage() {
-  return <WhatIfView />;
+  return (
+    <Suspense fallback={null}>
+      <WhatIfView />
+    </Suspense>
+  );
 }
