@@ -6,6 +6,7 @@ import { cities, getAllCitySlugs, getCityBySlug, getCityImageUrl } from "@/lib/d
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { IncomeNeededChart } from "@/components/charts/IncomeNeededChart";
+import { LiveRentCard } from "@/components/cities/LiveRentCard";
 import { formatCurrency } from "@/lib/utils/format";
 
 export function generateStaticParams() {
@@ -67,6 +68,8 @@ export default async function CityDetailPage({ params }: PageProps<"/cities/[cit
           <p className="text-xs text-muted">100 = national average</p>
         </Card>
       </div>
+
+      <LiveRentCard citySlug={city.slug} />
 
       <Card className="mt-8">
         <p className="flex items-center gap-2 text-sm font-semibold text-muted">
