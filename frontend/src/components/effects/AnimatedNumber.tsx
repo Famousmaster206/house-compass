@@ -20,11 +20,11 @@ export interface AnimatedNumberProps {
  * formatting.
  *
  * The formatted string is a derived `MotionValue` rendered directly as
- * `motion.span` text — motion subscribes to it and mutates the DOM node
+ * `motion.span` text. Motion subscribes to it and mutates the DOM node
  * itself on each spring tick, so this never drives a React re-render/setState
  * on every frame.
  *
- * Under `prefers-reduced-motion`, the spring is skipped entirely — the
+ * Under `prefers-reduced-motion`, the spring is skipped entirely. The
  * formatted value is rendered immediately with no transition.
  */
 export function AnimatedNumber({ value, format = "number", fractionDigits, className }: AnimatedNumberProps) {

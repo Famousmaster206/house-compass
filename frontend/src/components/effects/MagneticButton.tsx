@@ -18,7 +18,7 @@ export interface MagneticButtonProps {
  * Wraps a button/CTA so it subtly translates toward the cursor when the
  * pointer is within `ACTIVATION_RADIUS`, spring-releasing back to rest on
  * pointer leave. No-op wrapper (plain span, no listeners) on touch devices
- * or under reduced-motion — the child renders exactly as passed.
+ * or under reduced-motion. The child renders exactly as passed.
  */
 export function MagneticButton({ children, className }: MagneticButtonProps) {
   const pointerFine = usePointerFine();

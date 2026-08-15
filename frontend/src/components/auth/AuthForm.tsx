@@ -54,7 +54,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         {!configured && (
           <div className="mb-4 flex items-start gap-2 rounded-xl bg-moderate/10 p-3 text-sm text-moderate">
             <AlertCircle size={18} className="mt-0.5 shrink-0" aria-hidden="true" />
-            <span>Sign in to save calculations — auth isn&apos;t configured for this deployment yet.</span>
+            <span>Sign in to save calculations; auth is not configured for this deployment yet.</span>
           </div>
         )}
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">

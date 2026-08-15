@@ -1,5 +1,5 @@
 // Live rent data, sourced from RentCast via the Flask backend (backend/app.py
-// -> backend/rentcast.py). The RentCast API key stays server-side — this
+// -> backend/rentcast.py). The RentCast API key stays server-side; this
 // module only ever talks to our own backend, never RentCast directly.
 //
 // This is additive/display-only: it enriches city pages with a "live rent"
@@ -25,7 +25,7 @@ export async function getLiveRentForCity(citySlug: string): Promise<LiveRentData
   try {
     return await apiGet<LiveRentData>(`/api/rentcast/city/${citySlug}`);
   } catch (err) {
-    if (err instanceof ApiError) return null; // backend not configured / RentCast down — degrade quietly
+    if (err instanceof ApiError) return null; // backend not configured or RentCast unreachable. Degrade quietly
     throw err;
   }
 }

@@ -22,7 +22,7 @@ function getServerSnapshot(): boolean {
 
 /**
  * Tracks the user's `prefers-reduced-motion` OS/browser preference via
- * `useSyncExternalStore` — this reads the live media-query state on the
+ * `useSyncExternalStore`. This reads the live media-query state on the
  * client (including the very first client render, avoiding a "flash of
  * animated content" before an effect would otherwise fire) while still
  * returning a stable `false` during SSR so hydration matches. All animated

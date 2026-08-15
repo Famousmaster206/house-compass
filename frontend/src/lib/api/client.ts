@@ -1,7 +1,7 @@
 /**
  * Thin client for the separate backend (Flask app at repo root: app.py).
  *
- * The backend currently exposes no JSON API — it only renders a static
+ * The backend currently exposes no JSON API; it only renders a static
  * placeholder page. This client exists so the data/service layer
  * (lib/data/*, lib/services/*) has one place to swap from local static
  * data to real HTTP calls later, without touching call sites elsewhere
@@ -31,7 +31,7 @@ export class ApiError extends Error {
 /**
  * Fetch JSON from the backend. Throws ApiError on non-2xx or network failure.
  * Callers (lib/data/*, lib/services/*) should catch this and fall back to
- * local static data — the calculator must keep working with no backend present.
+ * local static data. The calculator must keep working with no backend present.
  */
 export async function apiGet<T>(path: string, init?: RequestInit): Promise<T> {
   if (!isApiConfigured()) {

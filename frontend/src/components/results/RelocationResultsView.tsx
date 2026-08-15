@@ -198,7 +198,7 @@ export function RelocationResultsView() {
           </div>
           <p className="mt-4 text-xs text-muted">
             Each category is converted using the overall cost-of-living index between your current city and
-            the Arizona city — a simplified, single-factor-per-category conversion, not a true category-level
+            the Arizona city (a simplified, single-factor-per-category conversion, not a true category-level
             market model. Treat these as directional estimates, not exact figures.
           </p>
         </Card>

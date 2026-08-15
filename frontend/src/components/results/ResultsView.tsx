@@ -16,7 +16,7 @@ import { compareCities, type CalculatorInput, type CalculationResult } from "@/l
 import { formatCurrency } from "@/lib/utils/format";
 import { ScrollReveal, ScrollRevealGroup } from "@/components/effects/ScrollReveal";
 
-// Results are handed off from /calculate via sessionStorage (see CalculatorForm) —
+// Results are handed off from /calculate via sessionStorage (see CalculatorForm).
 // simplest robust approach for a purely client-side MVP with no backend to persist
 // in-flight calculator state. Read lazily via useState's initializer (not an
 // effect) so there's no extra render/setState cycle and no lint issues around
@@ -135,16 +135,16 @@ export function ResultsView() {
           <p className="text-sm font-semibold text-muted">Plain-language recommendation</p>
           <p className="mt-2 text-text">
             {primary.affordability.rating === "comfortable" &&
-              `Based on your inputs, ${primary.cityName} looks comfortably affordable — you'd have healthy room left over each month.`}
+              `Based on your inputs, ${primary.cityName} looks comfortably affordable; you'd have healthy room left over each month.`}
             {primary.affordability.rating === "moderate" &&
-              `${primary.cityName} looks moderately affordable for you — manageable, but consider a budget cushion for surprises.`}
+              `${primary.cityName} looks moderately affordable for you; manageable, but consider a budget cushion for surprises.`}
             {primary.affordability.rating === "tight" &&
               `Your budget in ${primary.cityName} is tight. Consider a roommate, a smaller apartment, or cutting discretionary spending.`}
             {primary.affordability.rating === "difficult" &&
               `Based on your current inputs, ${primary.cityName} may be difficult to afford. Try the What-If tool to see what changes would help.`}
           </p>
           <p className="mt-2 text-xs text-muted">
-            This is an estimate for informational purposes only — not financial advice.
+            This is an estimate for informational purposes only (not financial advice).
           </p>
         </Card>
       </ScrollReveal>

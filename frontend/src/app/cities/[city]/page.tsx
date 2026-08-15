@@ -85,7 +85,7 @@ export default async function CityDetailPage({ params }: PageProps<"/cities/[cit
           <Users size={12} aria-hidden="true" /> ~{city.population.toLocaleString()} residents (sample data)
         </p>
         <p className="mt-2 text-xs text-muted">
-          All figures on this page are estimates from sample cost-of-living data — not live pricing.
+          All figures on this page are estimates from sample cost-of-living data (not live pricing).
         </p>
       </Card>
 

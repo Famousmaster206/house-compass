@@ -1,5 +1,5 @@
 // Single source of truth for affordability thresholds.
-// All other modules MUST import from here — never hardcode thresholds elsewhere.
+// All other modules MUST import from here; never hardcode thresholds elsewhere.
 
 export const COMFORTABLE_THRESHOLD = 0.3; // leftover > 30% of income
 export const MODERATE_THRESHOLD = 0.15; // leftover > 15% of income
@@ -20,7 +20,7 @@ export interface AffordabilityRating {
 
 /**
  * Rates affordability based on leftover money as a fraction of monthly income.
- * Never rely on color alone in the UI — always pair with the label/icon.
+ * Never rely on color alone in the UI; always pair with the label/icon.
  */
 export function getAffordabilityRating(
   leftover: number,

@@ -31,9 +31,9 @@ const gallery = [
   ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=85", "Pool at a luxury home"],
 ] as const;
 
-// RentCast listings don't include photos — the gallery above is illustrative
-// stock imagery, not photos of the actual matched property. TODO: swap for
-// real listing photos once available via a photos-inclusive data source.
+const costs = [{ name: "Mortgage", value: 3960, color: "#d66732" }, { name: "Summer AC", value: 360, color: "#e9ad58" }, { name: "Taxes & insurance", value: 740, color: "#8ba18b" }];
+const homeFacts: { icon: LucideIcon; label: string }[] = [{ icon: BedDouble, label: "4 beds" }, { icon: Bath, label: "3.5 baths" }, { icon: House, label: "2,846 sq ft" }];
+const details: { icon: LucideIcon; label: string; value: string }[] = [{ icon: Sun, label: "North / south facing", value: "Yes (shaded patio)" }, { icon: Snowflake, label: "AC system", value: "2 years young" }, { icon: Trees, label: "Water-wise yard", value: "Low-maintenance" }, { icon: Wind, label: "Monsoon ready", value: "Covered outdoor living" }];
 
 function parseBudgetLabel(label: string): number | undefined {
   // "Up to $750K" / "$750K–$1.25M" / "$1.25M+" -> upper bound in dollars

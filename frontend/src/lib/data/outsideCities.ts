@@ -7,7 +7,7 @@ export interface OutsideCity {
   name: string;
   state: string;
   costOfLivingIndex: number; // same 100-based scale as lib/data/cities.ts
-  rent1BR: number; // estimated median monthly rent, 1BR — for reference display only
+  rent1BR: number; // estimated median monthly rent, 1BR (reference display only)
 }
 
 export const outsideCities: OutsideCity[] = [

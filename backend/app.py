@@ -66,7 +66,7 @@ def _extract_rent_by_bedrooms(rentcast_payload):
 def rentcast_city(slug):
     """Live rent data for one Arizona city, proxied through RentCast.
 
-    The RentCast API key never leaves this server — the frontend only ever
+    The RentCast API key stays on this server; the frontend only ever
     calls this route. Falls back to a clear error status (not a crash) if the
     key isn't configured or RentCast is unreachable, so the frontend can fall
     back to its own static sample data.

@@ -2,7 +2,7 @@ import { getCityBySlug } from "@/lib/data/cities";
 import { getCityCostFactors, BASELINE_GROCERY_COST } from "@/lib/data/costs";
 
 // TODO: replace with a real aggregated cost-of-living API (e.g. C2ER, Numbeo,
-// or BLS regional CPI data) — this orchestrator currently composes our own
+// or BLS regional CPI data). This orchestrator currently composes our own
 // static sample tables in lib/data/*.
 
 export interface CityCostSummary {

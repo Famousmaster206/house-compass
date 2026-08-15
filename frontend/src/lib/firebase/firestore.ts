@@ -19,7 +19,7 @@ import type { CalculationResult } from "@/lib/services/calculator";
 // Security rule (see firestore.rules at project root):
 //   Only the authenticated user matching {userId} may read/write documents
 //   under users/{userId}/**. Every function below MUST be called with the
-//   uid from the authenticated user's own auth context (AuthContext) —
+//   uid from the authenticated user's own auth context (AuthContext)
 //   never trust a client-passed arbitrary userId for someone else's data.
 
 export interface SavedCalculation extends CalculationResult {
@@ -27,7 +27,7 @@ export interface SavedCalculation extends CalculationResult {
   savedAt?: unknown;
 }
 
-const NOT_CONFIGURED_ERROR = "Firestore isn't configured — sign in isn't available yet.";
+const NOT_CONFIGURED_ERROR = "Firestore is not configured; sign in is not available yet.";
 
 export async function saveCalculation(
   userId: string,

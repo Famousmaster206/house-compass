@@ -1,4 +1,4 @@
-// Sample/estimated data — TODO: replace with live cost-of-living API
+// Sample/estimated data. TODO: replace with live cost-of-living API
 // All figures are rough, illustrative estimates for MVP purposes only.
 // When the separate backend (repo root app.py) exposes a cities endpoint,
 // swap this for a call through lib/api/client.ts (see isApiConfigured()).
@@ -17,7 +17,7 @@ export interface City {
   vibe: string;
   // Free-to-use Unsplash photo (hotlinked via images.unsplash.com, no API key/
   // attribution required for this usage). Not the specific named city in every
-  // case — chosen for Arizona desert character. TODO: swap for a licensed,
+  // case. TODO: swap for a licensed,
   // city-specific photo set when available.
   imageId: string;
   imageAlt: string;
@@ -29,7 +29,7 @@ export const cities: City[] = [
     name: "Phoenix",
     region: "Maricopa County",
     description:
-      "Arizona's capital and largest city — a sprawling desert metro with big-city amenities and a lower cost of living than most major U.S. cities.",
+      "Arizona's capital and largest city. A sprawling desert metro with big-city amenities and lower cost of living than most major U.S. cities.",
     rent1BR: 1350,
     rent3BR: 1950,
     avgUtilities: 220,
@@ -93,7 +93,7 @@ export const cities: City[] = [
     name: "Scottsdale",
     region: "Maricopa County",
     description:
-      "Upscale desert living with resorts, golf courses, and a vibrant nightlife — the priciest city on this list.",
+      "Upscale desert living with resorts, golf courses, and vibrant nightlife. The priciest city on this list.",,
     rent1BR: 1850,
     rent3BR: 2650,
     avgUtilities: 240,
@@ -109,7 +109,7 @@ export const cities: City[] = [
     name: "Tempe",
     region: "Maricopa County",
     description:
-      "Home to Arizona State University — walkable, youthful, and dense by Valley standards.",
+      "Home to Arizona State University. Walkable, youthful, and dense by Valley standards.",,,
     rent1BR: 1500,
     rent3BR: 2000,
     avgUtilities: 210,
@@ -141,7 +141,7 @@ export const cities: City[] = [
     name: "Flagstaff",
     region: "Coconino County",
     description:
-      "A mountain college town at 7,000 feet — cooler climate, pine forests, and higher housing costs relative to income.",
+      "A mountain college town at 7,000 feet with cooler climate, pine forests, and higher housing costs relative to income.",
     rent1BR: 1500,
     rent3BR: 2100,
     avgUtilities: 200,

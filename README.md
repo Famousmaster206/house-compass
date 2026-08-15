@@ -262,7 +262,7 @@ Backend will run at `http://localhost:5000`
 Users input their financial situation and the calculator determines:
 - Monthly expenses across all categories
 - Estimated leftover after expenses
-- Affordability rating (Comfortable → Moderate → Tight → Difficult)
+- Affordability rating (Comfortable to Moderate to Tight to Difficult)
 
 ### AI Overview
 After seeing results, users can generate an AI-powered overview that provides:

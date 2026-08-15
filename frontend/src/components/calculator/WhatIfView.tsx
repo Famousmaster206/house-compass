@@ -55,7 +55,7 @@ export function WhatIfView() {
   // impact indicator reflects "what your last tweak just did," and fades out
   // shortly after each change settles. `tokenRef` is a monotonic counter (not
   // a timestamp) used purely as a React key to force the flash to re-trigger
-  // on consecutive changes — it's mutated inside the effect, never read
+  // on consecutive changes. It's mutated inside the effect, never read
   // during render.
   const prevLeftoverRef = useRef(currentResult.leftover);
   const tokenRef = useRef(0);

@@ -10,7 +10,7 @@ type Status = "loading" | "unavailable" | "ready";
 
 /**
  * Client-side leaf component that fetches live RentCast rent data through
- * the Flask backend (see lib/services/rentcast.ts). Purely additive — sits
+ * the Flask backend (see lib/services/rentcast.ts). Purely additive; sits
  * alongside the static estimate cards on the city detail page and degrades
  * to an "unavailable" state (not an error) if the backend/RentCast isn't
  * configured, so the rest of the page never depends on this succeeding.

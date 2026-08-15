@@ -1,7 +1,7 @@
 """Arizona city slug -> representative zip code, for RentCast lookups.
 
 One zip per city is a simplification (real cities span many zip codes with
-varying rents) — picked as a broadly representative/central zip for each
+varying rents). We picked a broadly representative/central zip for each
 city. TODO: consider averaging across multiple zips per city for a more
 robust estimate.
 """

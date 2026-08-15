@@ -8,7 +8,7 @@ import {
 import { auth, isFirebaseConfigured } from "@/lib/firebase/config";
 
 export const NOT_CONFIGURED_MESSAGE =
-  "Sign in isn't available yet — authentication hasn't been configured for this deployment.";
+  "Sign in is not available yet; authentication hasn't been configured for this deployment.";
 
 export interface AuthResult {
   user: User | null;
