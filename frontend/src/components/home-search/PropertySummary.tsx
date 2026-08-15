@@ -102,6 +102,9 @@ export function PropertySummary({ onRestart }: { onRestart: () => void }) {
             <p className="mt-4 max-w-2xl text-lg leading-8 text-[#68736a]">
               Sample listing for this demo, on the market for {listing.daysOnMarket} days.
             </p>
+
+            <PropertyAiOverview listing={listing} monthlyPayment={monthlyPayment} />
+
             <div className="mt-7 flex flex-wrap gap-3">
               {homeFacts.map(({ icon: Icon, label }) => (
                 <span key={label} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-bold text-[#3a4e40] shadow-sm ring-1 ring-[#e4ddd1]">
@@ -116,8 +119,6 @@ export function PropertySummary({ onRestart }: { onRestart: () => void }) {
             >
               <Calculator size={18} aria-hidden="true" /> Calculate my costs for this home
             </button>
-
-            <PropertyAiOverview listing={listing} monthlyPayment={monthlyPayment} />
           </div>
 
           <aside className="rounded-[2rem] bg-[#243b2f] p-7 text-white shadow-xl shadow-[#243b2f]/15">
@@ -202,7 +203,7 @@ function PropertyAiOverview({
   }
 
   return (
-    <div className="mt-10 rounded-3xl border border-[#e4ddd1] bg-white p-6">
+    <div className="mt-5 rounded-3xl border border-[#e4ddd1] bg-white p-6">
       <div className="flex items-center gap-2">
         <Sparkles size={20} className="text-[#d66732]" aria-hidden="true" />
         <p className="text-sm font-bold text-[#4e5e53]">AI-Powered Overview</p>
