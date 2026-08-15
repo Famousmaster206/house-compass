@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { AffordabilityBadge } from "@/components/ui/Badge";
 import { AffordabilityCard } from "@/components/results/AffordabilityCard";
+import { AiOverview } from "@/components/results/AiOverview";
 import { ExpenseChart } from "@/components/charts/ExpenseChart";
 import { CityComparisonChart } from "@/components/charts/CityComparisonChart";
 import { cities } from "@/lib/data/cities";
@@ -147,6 +148,8 @@ export function ResultsView() {
           </p>
         </Card>
       </ScrollReveal>
+
+      <AiOverview input={input} result={primary} />
 
       <div className="mt-10 flex justify-center">
         <Link href="/what-if">
