@@ -1,5 +1,7 @@
 // Sample/estimated data — TODO: replace with live cost-of-living API
 // All figures are rough, illustrative estimates for MVP purposes only.
+// When the separate backend (repo root app.py) exposes a cities endpoint,
+// swap this for a call through lib/api/client.ts (see isApiConfigured()).
 
 export interface City {
   slug: string;
