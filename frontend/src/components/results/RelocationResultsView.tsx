@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { AffordabilityBadge } from "@/components/ui/Badge";
 import { AnimatedNumber } from "@/components/effects/AnimatedNumber";
 import { ScrollReveal, ScrollRevealGroup } from "@/components/effects/ScrollReveal";
+import { ExpenseChart } from "@/components/charts/ExpenseChart";
 import { cities } from "@/lib/data/cities";
 import {
   compareRelocationAcrossCities,
@@ -18,6 +19,15 @@ import {
 import { formatCurrency, formatPercent } from "@/lib/utils/format";
 
 const STORAGE_KEY = "house-compass-relocation-input";
+
+const CATEGORY_LABELS: Record<string, string> = {
+  housing: "Housing",
+  utilities: "Utilities",
+  transportation: "Transportation",
+  groceries: "Groceries",
+  dining: "Dining",
+  lifestyle: "Lifestyle",
+};
 
 function readStoredInput(): RelocationInput | null {
   if (typeof window === "undefined") return null;
@@ -50,13 +60,15 @@ export function RelocationResultsView() {
   }
 
   const allSlugs = cities.map((c) => c.slug);
-  const results: RelocationResult[] = compareRelocationAcrossCities(
-    { monthlyIncome: input.monthlyIncome, currentCitySlug: input.currentCitySlug, currentMonthlyExpenses: input.currentMonthlyExpenses },
-    allSlugs
-  );
-  const primary = results.find((r) => r.targetCity.slug === input.targetCitySlug) ?? results[0];
+  const { targetCitySlug, ...baseInput } = input;
+  const results: RelocationResult[] = compareRelocationAcrossCities(baseInput, allSlugs);
+  const primary = results.find((r) => r.targetCity.slug === targetCitySlug) ?? results[0];
   const sorted = [...results].sort((a, b) => b.estimatedLeftover - a.estimatedLeftover);
   const cheaper = primary.monthlySavings > 0;
+
+  const biggestCategory = (Object.entries(primary.targetExpenses) as [string, number][])
+    .filter(([key]) => key !== "total")
+    .sort((a, b) => b[1] - a[1])[0];
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
@@ -93,25 +105,49 @@ export function RelocationResultsView() {
             <div>
               <p className="text-muted">Converted expenses</p>
               <p className="font-bold text-text tabular-nums">
-                <AnimatedNumber value={primary.estimatedTargetExpenses} format="currency" />
+                <AnimatedNumber value={primary.targetExpenses.total} format="currency" />
               </p>
             </div>
           </div>
         </Card>
 
         <Card>
-          <p className="text-sm font-semibold text-muted">What you spend now vs. what it costs there</p>
-          <div className="mt-4 flex flex-col gap-4">
-            <div className="flex items-center justify-between rounded-2xl bg-sandstone-light/60 px-4 py-3">
-              <span className="text-sm font-semibold text-text">{primary.currentCity.name} today</span>
-              <span className="font-bold tabular-nums text-text">{formatCurrency(primary.currentMonthlyExpenses)}</span>
-            </div>
-            <div className="flex items-center justify-between rounded-2xl bg-primary/10 px-4 py-3">
-              <span className="text-sm font-semibold text-text">{primary.targetCity.name} (converted)</span>
-              <span className="font-bold tabular-nums text-text">
-                <AnimatedNumber value={primary.estimatedTargetExpenses} format="currency" />
-              </span>
-            </div>
+          <p className="text-sm font-semibold text-muted">Where your converted money goes</p>
+          <ExpenseChart expenses={primary.targetExpenses} />
+        </Card>
+      </ScrollRevealGroup>
+
+      <ScrollReveal>
+        <Card className="mt-8">
+          <p className="text-sm font-semibold text-muted">What you spend now vs. what it costs there, by category</p>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-sandstone/50 text-muted">
+                  <th className="py-2 pr-4 font-semibold">Category</th>
+                  <th className="py-2 pr-4 font-semibold">{primary.currentCity.name} today</th>
+                  <th className="py-2 pr-4 font-semibold">{primary.targetCity.name} (converted)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(Object.keys(CATEGORY_LABELS) as (keyof typeof CATEGORY_LABELS)[]).map((key) => (
+                  <tr key={key} className="border-b border-sandstone/30">
+                    <td className="py-2.5 pr-4 font-semibold text-text">{CATEGORY_LABELS[key]}</td>
+                    <td className="py-2.5 pr-4 tabular-nums text-text">
+                      {formatCurrency(primary.currentExpenses[key as keyof typeof primary.currentExpenses])}
+                    </td>
+                    <td className="py-2.5 pr-4 tabular-nums text-text">
+                      {formatCurrency(primary.targetExpenses[key as keyof typeof primary.targetExpenses])}
+                    </td>
+                  </tr>
+                ))}
+                <tr className="font-bold text-text">
+                  <td className="py-2.5 pr-4">Total</td>
+                  <td className="py-2.5 pr-4 tabular-nums">{formatCurrency(primary.currentExpenses.total)}</td>
+                  <td className="py-2.5 pr-4 tabular-nums">{formatCurrency(primary.targetExpenses.total)}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div className="mt-5 flex items-center gap-2 rounded-2xl border border-sandstone/50 px-4 py-3">
             {cheaper ? (
@@ -122,11 +158,12 @@ export function RelocationResultsView() {
             <p className="text-sm text-text">
               <span className="font-bold">{formatCurrency(Math.abs(primary.monthlySavings))}/month</span>{" "}
               {cheaper ? "less" : "more"} than {primary.currentCity.name} ({formatPercent(Math.abs(primary.percentChange))}
-              {cheaper ? " cheaper" : " more expensive"}).
+              {cheaper ? " cheaper" : " more expensive"}). Your biggest expense in {primary.targetCity.name} would be{" "}
+              <span className="font-bold capitalize">{CATEGORY_LABELS[biggestCategory[0]] ?? biggestCategory[0]}</span>.
             </p>
           </div>
         </Card>
-      </ScrollRevealGroup>
+      </ScrollReveal>
 
       <ScrollReveal>
         <Card className="mt-8">
@@ -149,7 +186,7 @@ export function RelocationResultsView() {
                     onClick={() => router.push(`/cities/${r.targetCity.slug}`)}
                   >
                     <td className="py-2.5 pr-4 font-semibold text-text">{r.targetCity.name}</td>
-                    <td className="py-2.5 pr-4 tabular-nums text-text">{formatCurrency(r.estimatedTargetExpenses)}</td>
+                    <td className="py-2.5 pr-4 tabular-nums text-text">{formatCurrency(r.targetExpenses.total)}</td>
                     <td className="py-2.5 pr-4 tabular-nums text-text">{formatCurrency(r.estimatedLeftover)}</td>
                     <td className="py-2.5 pr-4">
                       <AffordabilityBadge rating={r.affordability.rating} label={r.affordability.label} />
@@ -160,9 +197,9 @@ export function RelocationResultsView() {
             </table>
           </div>
           <p className="mt-4 text-xs text-muted">
-            Converted using each city&apos;s overall cost-of-living index — a simplified, single-factor
-            conversion, not a category-by-category (housing/food/transport) model. Treat these as
-            directional estimates, not exact figures.
+            Each category is converted using the overall cost-of-living index between your current city and
+            the Arizona city — a simplified, single-factor-per-category conversion, not a true category-level
+            market model. Treat these as directional estimates, not exact figures.
           </p>
         </Card>
       </ScrollReveal>

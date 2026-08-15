@@ -81,6 +81,11 @@ body {
   }
 }
 
+@keyframes search-progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
 /* Slider thumb microinteraction (used by src/components/ui/Slider.tsx) */
 .az-slider::-webkit-slider-thumb {
   transition: transform 150ms ease, box-shadow 150ms ease;

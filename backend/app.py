@@ -153,7 +153,7 @@ Please provide:
 Keep the tone friendly, practical, and empowering. Focus on actionable insights they can use."""
 
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         response = model.generate_content(prompt)
         
         return jsonify({

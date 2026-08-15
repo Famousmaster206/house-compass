@@ -66,7 +66,7 @@ export async function apiPost<T>(path: string, body: unknown, init?: RequestInit
 export async function generateAiOverview(data: {
   cityName: string;
   monthlyIncome: number;
-  expenses: Record<string, number>;
+  expenses: { housing: number; utilities: number; transportation: number; groceries: number; dining: number; lifestyle: number; total: number };
   leftover: number;
   affordabilityRating: string;
   householdSize: number;
