@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>House Compass</title>
+    <link
+      rel="icon"
+      type="image/avif"
+      href="{{ url_for('static', filename='logo/house-compass-logo.avif') }}"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="{{ url_for('static', filename='logo/logo-placeholder.svg') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <picture>
+          <source
+            type="image/avif"
+            srcset="{{ url_for('static', filename='logo/house-compass-logo.avif') }}"
+          />
+          <img
+            src="{{ url_for('static', filename='logo/logo-placeholder.svg') }}"
+            alt="House Compass logo"
+            class="logo"
+          />
+        </picture>
+        <span>House Compass</span>
+      </div>
+    </header>
+
+    <main class="hero">
+      <h1>Find the right home with confidence</h1>
+      <p>
+        This site is ready for your real logo. Drop your AVIF file into
+        <strong>static/logo/house-compass-logo.avif</strong> and it will show up here.
+      </p>
+    </main>
+  </body>
+</html>
