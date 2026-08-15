@@ -5,7 +5,14 @@ import json
 import os
 import google.generativeai as genai
 
-from rentcast import get_market_statistics, is_configured as rentcast_is_configured, RentCastError
+from rentcast import (
+    get_market_statistics,
+    get_rent_estimate,
+    get_value_estimate,
+    is_configured as rentcast_is_configured,
+    RentCastError,
+    search_sale_listings,
+)
 from az_cities import CITY_ZIP_CODES, get_zip_for_city
 
 load_dotenv()  # loads ../.env.local (and .env in backend/) if present
@@ -101,6 +108,148 @@ def rentcast_all_cities():
 def rentcast_status():
     return jsonify({"configured": rentcast_is_configured()})
 
+
+def _extract_subject_property(subject):
+    """Trims a RentCast subjectProperty object down to the fields the frontend uses."""
+    if not subject:
+        return None
+    return {
+        "formattedAddress": subject.get("formattedAddress"),
+        "city": subject.get("city"),
+        "state": subject.get("state"),
+        "zipCode": subject.get("zipCode"),
+        "propertyType": subject.get("propertyType"),
+        "bedrooms": subject.get("bedrooms"),
+        "bathrooms": subject.get("bathrooms"),
+        "squareFootage": subject.get("squareFootage"),
+        "yearBuilt": subject.get("yearBuilt"),
+        "lastSaleDate": subject.get("lastSaleDate"),
+        "lastSalePrice": subject.get("lastSalePrice"),
+    }
+
+
+@app.route('/api/rentcast/address-estimate', methods=['GET'])
+def rentcast_address_estimate():
+    """Combined sale-value + rent estimate for one specific street address.
+
+    Query params: address (required) - "Street, City, State, Zip"
+
+    Powers the "plug in a target address" option on the calculator, as an
+    alternative to the manual per-category entry — both stay available.
+    """
+    address = request.args.get('address', '').strip()
+    if not address:
+        return jsonify({"error": "Missing required query parameter: address"}), 400
+
+    result = {"address": address, "source": "rentcast"}
+    errors = {}
+
+    try:
+        value = get_value_estimate(address)
+        result["saleValue"] = {
+            "price": value.get("price"),
+            "priceRangeLow": value.get("priceRangeLow"),
+            "priceRangeHigh": value.get("priceRangeHigh"),
+        }
+        result["subjectProperty"] = _extract_subject_property(value.get("subjectProperty"))
+    except RentCastError as exc:
+        errors["saleValue"] = str(exc)
+
+    try:
+        rent = get_rent_estimate(address)
+        result["rentEstimate"] = {
+            "rent": rent.get("rent"),
+            "rentRangeLow": rent.get("rentRangeLow"),
+            "rentRangeHigh": rent.get("rentRangeHigh"),
+        }
+        if result.get("subjectProperty") is None:
+            result["subjectProperty"] = _extract_subject_property(rent.get("subjectProperty"))
+    except RentCastError as exc:
+        errors["rentEstimate"] = str(exc)
+
+    if errors:
+        result["errors"] = errors
+    if "saleValue" not in result and "rentEstimate" not in result:
+        # Both calls failed outright — surface as an error response, not a silent empty 200.
+        return jsonify({"error": "RentCast could not estimate this address.", "details": errors}), 502
+
+    return jsonify(result)
+
+
+def _score_listing(listing, target_budget, preferred_beds):
+    """Simple scoring heuristic for 'find a good house' — not ML, just a
+    transparent weighted distance from the user's stated budget/bedroom
+    preference, favoring listings closer to what they asked for and with
+    fewer days on market (fresher listings)."""
+    price = listing.get("price") or 0
+    beds = listing.get("bedrooms") or 0
+    days_on_market = listing.get("daysOnMarket") if listing.get("daysOnMarket") is not None else 30
+
+    score = 0.0
+    if target_budget:
+        # Penalize distance from budget; being under budget is fine, over is worse.
+        diff = price - target_budget
+        score -= (diff / target_budget) * 100 if diff > 0 else (abs(diff) / target_budget) * 20
+    if preferred_beds:
+        score -= abs(beds - preferred_beds) * 15
+    score -= min(days_on_market, 90) * 0.2  # fresher listings score slightly higher
+
+    return score
+
+
+@app.route('/api/rentcast/listings/search', methods=['GET'])
+def rentcast_listings_search():
+    """Searches active for-sale listings and ranks them against simple
+    user-stated preferences (budget, bedroom count) — this is a transparent
+    heuristic filter/sort, not a machine-learned recommendation engine.
+
+    Query params:
+      city (optional), state (optional, defaults to AZ), zipCode (optional)
+      maxBudget (optional, number)
+      bedrooms (optional, number) - preferred bedroom count
+      limit (optional, default 50, max 500)
+    """
+    city = request.args.get('city')
+    state = request.args.get('state', 'AZ')
+    zip_code = request.args.get('zipCode')
+    limit = int(request.args.get('limit', 50))
+    max_budget = request.args.get('maxBudget', type=float)
+    preferred_beds = request.args.get('bedrooms', type=float)
+
+    if not city and not zip_code:
+        return jsonify({"error": "Provide at least a city or zipCode to search."}), 400
+
+    try:
+        listings = search_sale_listings(city=city, state=state, zip_code=zip_code, limit=limit)
+    except RentCastError as exc:
+        status = exc.status if exc.status and exc.status < 500 else 502
+        return jsonify({"error": str(exc)}), status
+
+    if max_budget:
+        listings = [item for item in listings if not item.get("price") or item.get("price") <= max_budget * 1.1]
+
+    ranked = sorted(listings, key=lambda item: _score_listing(item, max_budget, preferred_beds), reverse=True)
+
+    trimmed = [
+        {
+            "id": item.get("id"),
+            "formattedAddress": item.get("formattedAddress"),
+            "city": item.get("city"),
+            "state": item.get("state"),
+            "zipCode": item.get("zipCode"),
+            "price": item.get("price"),
+            "bedrooms": item.get("bedrooms"),
+            "bathrooms": item.get("bathrooms"),
+            "squareFootage": item.get("squareFootage"),
+            "propertyType": item.get("propertyType"),
+            "daysOnMarket": item.get("daysOnMarket"),
+            "listedDate": item.get("listedDate"),
+        }
+        for item in ranked
+    ]
+
+    return jsonify({"listings": trimmed, "count": len(trimmed), "source": "rentcast"})
+
 @app.route('/api/ai-overview', methods=['POST'])
 def generate_ai_overview():
     """Generate an AI-powered overview of the user's housing affordability based on their calculation results."""
@@ -165,6 +314,69 @@ Keep the tone friendly, practical, and empowering. Focus on actionable insights 
             "error": f"Failed to generate overview: {str(e)}",
             "success": False
         }), 500
+
+
+@app.route('/api/ai-property-overview', methods=['POST'])
+def generate_ai_property_overview():
+    """Generate an AI overview of a specific for-sale property listing.
+
+    Request body:
+    {
+        "address": string, "price": number, "bedrooms": number,
+        "bathrooms": number, "squareFootage": number, "propertyType": string,
+        "daysOnMarket": number, "monthlyIncome": number (optional),
+        "estimatedMonthlyPayment": number (optional)
+    }
+    """
+    if not GEMINI_API_KEY:
+        return jsonify({"error": "Gemini API key not configured"}), 500
+
+    data = request.json or {}
+
+    address = data.get('address', 'this property')
+    price = data.get('price', 0)
+    bedrooms = data.get('bedrooms', 0)
+    bathrooms = data.get('bathrooms', 0)
+    square_footage = data.get('squareFootage', 0)
+    property_type = data.get('propertyType', 'home')
+    days_on_market = data.get('daysOnMarket')
+    monthly_income = data.get('monthlyIncome')
+    estimated_monthly_payment = data.get('estimatedMonthlyPayment')
+
+    prompt = f"""Based on the following real for-sale property listing in Arizona, provide a short, friendly, practical AI-powered overview for a prospective buyer.
+
+PROPERTY:
+- Address: {address}
+- Price: ${price:,}
+- Type: {property_type}
+- Bedrooms: {bedrooms}, Bathrooms: {bathrooms}
+- Square footage: {square_footage:,} sq ft
+- Days on market: {days_on_market if days_on_market is not None else "unknown"}
+{f"- Buyer's monthly income: ${monthly_income:,}" if monthly_income else ""}
+{f"- Estimated monthly payment: ${estimated_monthly_payment:,}" if estimated_monthly_payment else ""}
+
+Please provide, in a short conversational tone (3-4 short paragraphs, no headers):
+1. A quick read on whether this looks like a solid opportunity (price relative to size, days on market as a freshness/negotiation signal)
+2. What stands out about this property on paper
+3. One or two practical things the buyer should check or ask about
+4. If income/payment info was given, a brief affordability comment
+
+Keep it grounded and honest — do not invent facts not given above, and do not give exact financial/legal advice."""
+
+    try:
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        response = model.generate_content(prompt)
+
+        return jsonify({
+            "overview": response.text,
+            "success": True
+        })
+    except Exception as e:
+        return jsonify({
+            "error": f"Failed to generate property overview: {str(e)}",
+            "success": False
+        }), 500
+
 
 @app.route('/api/calculate-net-spending', methods=['POST'])
 def calculate_net_spending():

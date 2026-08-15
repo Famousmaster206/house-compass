@@ -76,3 +76,78 @@ export async function generateAiOverview(data: {
 }): Promise<{ overview: string; success: boolean }> {
   return apiPost<{ overview: string; success: boolean }>("/api/ai-overview", data);
 }
+
+export interface AddressEstimate {
+  address: string;
+  source: "rentcast";
+  saleValue?: { price: number | null; priceRangeLow: number | null; priceRangeHigh: number | null };
+  rentEstimate?: { rent: number | null; rentRangeLow: number | null; rentRangeHigh: number | null };
+  subjectProperty?: {
+    formattedAddress: string | null;
+    city: string | null;
+    state: string | null;
+    zipCode: string | null;
+    propertyType: string | null;
+    bedrooms: number | null;
+    bathrooms: number | null;
+    squareFootage: number | null;
+    yearBuilt: number | null;
+    lastSaleDate: string | null;
+    lastSalePrice: number | null;
+  } | null;
+  errors?: Record<string, string>;
+}
+
+/** Address-based sale value + rent estimate, for the calculator's "target address" option. */
+export async function getAddressEstimate(address: string): Promise<AddressEstimate> {
+  return apiGet<AddressEstimate>(`/api/rentcast/address-estimate?address=${encodeURIComponent(address)}`);
+}
+
+export interface SaleListing {
+  id: string;
+  formattedAddress: string;
+  city: string | null;
+  state: string | null;
+  zipCode: string | null;
+  price: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  squareFootage: number | null;
+  propertyType: string | null;
+  daysOnMarket: number | null;
+  listedDate: string | null;
+}
+
+/** Ranked active for-sale listings for a city, filtered/sorted by budget + bedroom preference. */
+export async function searchSaleListings(params: {
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  maxBudget?: number;
+  bedrooms?: number;
+  limit?: number;
+}): Promise<{ listings: SaleListing[]; count: number; source: "rentcast" }> {
+  const query = new URLSearchParams();
+  if (params.city) query.set("city", params.city);
+  if (params.state) query.set("state", params.state);
+  if (params.zipCode) query.set("zipCode", params.zipCode);
+  if (params.maxBudget) query.set("maxBudget", String(params.maxBudget));
+  if (params.bedrooms) query.set("bedrooms", String(params.bedrooms));
+  if (params.limit) query.set("limit", String(params.limit));
+  return apiGet(`/api/rentcast/listings/search?${query.toString()}`);
+}
+
+/** AI-generated overview of a specific for-sale property listing (Gemini, via backend). */
+export async function generateAiPropertyOverview(data: {
+  address: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  squareFootage: number;
+  propertyType: string;
+  daysOnMarket?: number | null;
+  monthlyIncome?: number;
+  estimatedMonthlyPayment?: number;
+}): Promise<{ overview: string; success: boolean }> {
+  return apiPost<{ overview: string; success: boolean }>("/api/ai-property-overview", data);
+}

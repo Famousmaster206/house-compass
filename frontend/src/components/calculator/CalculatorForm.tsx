@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { Check } from "lucide-react";
+import { Check, MapPin, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
@@ -11,6 +11,8 @@ import { Card } from "@/components/ui/Card";
 import { cities } from "@/lib/data/cities";
 import type { CalculatorInput } from "@/lib/services/calculator";
 import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
+import { getAddressEstimate, isApiConfigured, ApiError } from "@/lib/api/client";
+import { formatCurrency } from "@/lib/utils/format";
 
 const STEPS = ["Personal", "Housing", "Transportation", "Food", "Utilities", "Lifestyle", "City"] as const;
 
@@ -34,6 +36,37 @@ export function CalculatorForm() {
   const [input, setInput] = useState<CalculatorInput>(DEFAULTS);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const reducedMotion = usePrefersReducedMotion();
+
+  // Address-based rent lookup (via backend -> RentCast), as an alternative to
+  // manually typing a rent override. Both stay available side by side.
+  const [rentMode, setRentMode] = useState<"manual" | "address">("manual");
+  const [targetAddress, setTargetAddress] = useState("");
+  const [addressLookup, setAddressLookup] = useState<"idle" | "loading" | "error" | "done">("idle");
+  const [addressLookupError, setAddressLookupError] = useState("");
+  const [addressLookupRent, setAddressLookupRent] = useState<number | null>(null);
+
+  async function lookupAddress() {
+    if (!targetAddress.trim()) return;
+    setAddressLookup("loading");
+    setAddressLookupError("");
+    try {
+      const result = await getAddressEstimate(targetAddress.trim());
+      const rent = result.rentEstimate?.rent ?? null;
+      if (rent) {
+        setAddressLookupRent(rent);
+        update("userProvidedRent", rent);
+        setAddressLookup("done");
+      } else {
+        setAddressLookupError("No rent estimate available for that address. Try the manual option instead.");
+        setAddressLookup("error");
+      }
+    } catch (err) {
+      setAddressLookupError(
+        err instanceof ApiError ? err.message : "Couldn't look up that address. Try the manual option instead."
+      );
+      setAddressLookup("error");
+    }
+  }
 
   function update<K extends keyof CalculatorInput>(key: K, value: CalculatorInput[K]) {
     setInput((prev) => ({ ...prev, [key]: value }));
@@ -165,16 +198,90 @@ export function CalculatorForm() {
               error={errors.roommates}
               hint="Number of additional roommates splitting rent with you (0 = living alone)."
             />
-            <Input
-              label="Estimated rent override (optional)"
-              type="number"
-              min={0}
-              value={input.userProvidedRent ?? ""}
-              onChange={(e) =>
-                update("userProvidedRent", e.target.value ? Number(e.target.value) : undefined)
-              }
-              hint="Leave blank to use our estimated rent for your chosen city."
-            />
+            <div className="flex flex-col gap-3 rounded-2xl border border-sandstone/50 p-4">
+              <div className="flex items-center gap-2 text-sm font-semibold text-text">
+                <MapPin size={16} className="text-primary" aria-hidden="true" />
+                Rent for this calculation
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setRentMode("manual")}
+                  className={`flex-1 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${
+                    rentMode === "manual" ? "bg-primary text-white" : "bg-sandstone-light text-muted"
+                  }`}
+                >
+                  Enter manually
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRentMode("address")}
+                  className={`flex-1 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${
+                    rentMode === "address" ? "bg-primary text-white" : "bg-sandstone-light text-muted"
+                  }`}
+                >
+                  Look up an address
+                </button>
+              </div>
+
+              {rentMode === "manual" && (
+                <Input
+                  label="Estimated rent override (optional)"
+                  type="number"
+                  min={0}
+                  value={input.userProvidedRent ?? ""}
+                  onChange={(e) =>
+                    update("userProvidedRent", e.target.value ? Number(e.target.value) : undefined)
+                  }
+                  hint="Leave blank to use our estimated rent for your chosen city."
+                />
+              )}
+
+              {rentMode === "address" && (
+                <div className="flex flex-col gap-3">
+                  {!isApiConfigured() && (
+                    <p className="flex items-center gap-2 text-xs text-muted">
+                      <AlertCircle size={14} aria-hidden="true" />
+                      Address lookup isn&apos;t configured right now — use the manual option instead.
+                    </p>
+                  )}
+                  <div className="flex gap-2">
+                    <Input
+                      label="Target address"
+                      value={targetAddress}
+                      onChange={(e) => setTargetAddress(e.target.value)}
+                      placeholder="123 Main St, Phoenix, AZ, 85003"
+                      hint="Full street address, city, state, and zip."
+                      className="flex-1"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={lookupAddress}
+                    disabled={!targetAddress.trim() || addressLookup === "loading" || !isApiConfigured()}
+                  >
+                    {addressLookup === "loading" ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" aria-hidden="true" /> Looking up rent…
+                      </>
+                    ) : (
+                      "Look up rent estimate"
+                    )}
+                  </Button>
+                  {addressLookup === "done" && addressLookupRent && (
+                    <p className="text-sm font-semibold text-comfortable">
+                      Found: {formatCurrency(addressLookupRent)}/month — applied to your calculation.
+                    </p>
+                  )}
+                  {addressLookup === "error" && (
+                    <p className="flex items-center gap-2 text-sm text-difficult">
+                      <AlertCircle size={14} aria-hidden="true" /> {addressLookupError}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         )}
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ArrowLeft, ArrowRight, Building2, House, Mountain, Palmtree, Sparkles, Sun, Trees, Waves } from "lucide-react";
 
 const steps = [
@@ -10,12 +11,28 @@ const steps = [
   { eyebrow: "Your north star", title: "What&apos;s your comfortable home budget?", options: [{ label: "Up to $750K", sublabel: "Thoughtful value" }, { label: "$750K–$1.25M", sublabel: "Room to roam" }, { label: "$1.25M+", sublabel: "Dream-home mode" }] },
 ] as const;
 
-export function PreferenceWizard({ onBack, onSubmit }: { onBack: () => void; onSubmit: () => void }) {
+export interface HomeSearchAnswers {
+  style: string;
+  priority: string;
+  rhythm: string;
+  budget: string;
+}
+
+export function PreferenceWizard({
+  onBack,
+  onSubmit,
+}: {
+  onBack: () => void;
+  onSubmit: (answers: HomeSearchAnswers) => void;
+}) {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState(["Desert modern", "A pool", "Outdoors & trails", "$750K–$1.25M"]);
   const current = steps[step];
   const select = (option: string) => setAnswers((previous) => previous.map((answer, index) => index === step ? option : answer));
-  const next = () => step === steps.length - 1 ? onSubmit() : setStep((value) => value + 1);
+  const next = () =>
+    step === steps.length - 1
+      ? onSubmit({ style: answers[0], priority: answers[1], rhythm: answers[2], budget: answers[3] })
+      : setStep((value) => value + 1);
 
-  return <section className="min-h-[calc(100svh-73px)] bg-[#faf6ef] px-5 py-12 sm:px-8 sm:py-16"><div className="mx-auto max-w-3xl"><button onClick={step === 0 ? onBack : () => setStep((value) => value - 1)} className="inline-flex items-center gap-2 text-sm font-bold text-[#68756b] transition hover:text-[#253a2e]"><ArrowLeft size={17} />Back</button><div className="mt-9 flex items-center justify-between gap-5"><p className="text-sm font-extrabold uppercase tracking-[0.16em] text-[#bd612f]">Step {step + 1} of {steps.length}</p><p className="text-sm font-semibold text-[#788078]">{Math.round(((step + 1) / steps.length) * 100)}% complete</p></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-[#eadfce]"><div className="h-full rounded-full bg-gradient-to-r from-[#d66732] to-[#efa156] transition-all duration-500" style={{ width: `${((step + 1) / steps.length) * 100}%` }} /></div><div className="mt-12"><p className="text-sm font-bold text-[#7c887d]">{current.eyebrow}</p><h1 className="mt-2 text-4xl font-extrabold tracking-[-0.045em] text-[#23382d] sm:text-5xl">{current.title.replace("&apos;", "'")}</h1><p className="mt-4 max-w-xl text-lg leading-7 text-[#697269]">There&apos;s no wrong answer. We&apos;re looking for the details that make a house feel right.</p><div className="mt-9 grid gap-4 sm:grid-cols-3">{current.options.map((option) => { const selected = answers[step] === option.label; const Icon = "icon" in option ? option.icon : undefined; return <button key={option.label} onClick={() => select(option.label)} className={`group relative min-h-48 overflow-hidden rounded-3xl border-2 p-5 text-left transition duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#d66732] ${selected ? "border-[#d66732] bg-[#fffaf3] shadow-lg shadow-[#d66732]/10" : "border-[#e5d9c9] bg-white hover:-translate-y-1 hover:border-[#bdc8b8] hover:shadow-lg hover:shadow-black/5"}`}>{"image" in option && <img src={option.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-20 transition group-hover:opacity-30" />}<span className={`relative flex h-11 w-11 items-center justify-center rounded-2xl ${selected ? "bg-[#d66732] text-white" : "bg-[#edf1e9] text-[#48604e]"}`}>{Icon && <Icon size={22} />}</span><span className="relative mt-8 block text-lg font-extrabold text-[#263a30]">{option.label}</span>{"sublabel" in option && <span className="relative mt-1 block text-sm text-[#778078]">{option.sublabel}</span>}<span className={`absolute right-4 top-4 h-5 w-5 rounded-full border-2 ${selected ? "border-[#d66732] bg-[#d66732] shadow-[inset_0_0_0_3px_white]" : "border-[#c8cec5]"}`} /></button>; })}</div></div><div className="mt-10 flex items-center justify-between border-t border-[#e4d9c9] pt-6"><p className="hidden text-sm text-[#737c72] sm:block">Your choices stay private to this search.</p><button onClick={next} className="ml-auto inline-flex items-center gap-2 rounded-full bg-[#243b2f] px-6 py-3.5 font-bold text-white shadow-lg shadow-[#243b2f]/15 transition hover:-translate-y-0.5 hover:bg-[#345342]">{step === steps.length - 1 ? "Find my match" : "Continue"}<ArrowRight size={18} /></button></div></div></section>;
+  return <section className="min-h-[calc(100svh-73px)] bg-[#faf6ef] px-5 py-12 sm:px-8 sm:py-16"><div className="mx-auto max-w-3xl"><button onClick={step === 0 ? onBack : () => setStep((value) => value - 1)} className="inline-flex items-center gap-2 text-sm font-bold text-[#68756b] transition hover:text-[#253a2e]"><ArrowLeft size={17} />Back</button><div className="mt-9 flex items-center justify-between gap-5"><p className="text-sm font-extrabold uppercase tracking-[0.16em] text-[#bd612f]">Step {step + 1} of {steps.length}</p><p className="text-sm font-semibold text-[#788078]">{Math.round(((step + 1) / steps.length) * 100)}% complete</p></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-[#eadfce]"><div className="h-full rounded-full bg-gradient-to-r from-[#d66732] to-[#efa156] transition-all duration-500" style={{ width: `${((step + 1) / steps.length) * 100}%` }} /></div><div className="mt-12"><p className="text-sm font-bold text-[#7c887d]">{current.eyebrow}</p><h1 className="mt-2 text-4xl font-extrabold tracking-[-0.045em] text-[#23382d] sm:text-5xl">{current.title.replace("&apos;", "'")}</h1><p className="mt-4 max-w-xl text-lg leading-7 text-[#697269]">There&apos;s no wrong answer. We&apos;re looking for the details that make a house feel right.</p><div className="mt-9 grid gap-4 sm:grid-cols-3">{current.options.map((option) => { const selected = answers[step] === option.label; const Icon = "icon" in option ? option.icon : undefined; return <button key={option.label} onClick={() => select(option.label)} className={`group relative min-h-48 overflow-hidden rounded-3xl border-2 p-5 text-left transition duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#d66732] ${selected ? "border-[#d66732] bg-[#fffaf3] shadow-lg shadow-[#d66732]/10" : "border-[#e5d9c9] bg-white hover:-translate-y-1 hover:border-[#bdc8b8] hover:shadow-lg hover:shadow-black/5"}`}>{"image" in option && <Image src={option.image} alt="" fill sizes="33vw" className="absolute inset-0 object-cover opacity-20 transition group-hover:opacity-30" />}<span className={`relative flex h-11 w-11 items-center justify-center rounded-2xl ${selected ? "bg-[#d66732] text-white" : "bg-[#edf1e9] text-[#48604e]"}`}>{Icon && <Icon size={22} />}</span><span className="relative mt-8 block text-lg font-extrabold text-[#263a30]">{option.label}</span>{"sublabel" in option && <span className="relative mt-1 block text-sm text-[#778078]">{option.sublabel}</span>}<span className={`absolute right-4 top-4 h-5 w-5 rounded-full border-2 ${selected ? "border-[#d66732] bg-[#d66732] shadow-[inset_0_0_0_3px_white]" : "border-[#c8cec5]"}`} /></button>; })}</div></div><div className="mt-10 flex items-center justify-between border-t border-[#e4d9c9] pt-6"><p className="hidden text-sm text-[#737c72] sm:block">Your choices stay private to this search.</p><button onClick={next} className="ml-auto inline-flex items-center gap-2 rounded-full bg-[#243b2f] px-6 py-3.5 font-bold text-white shadow-lg shadow-[#243b2f]/15 transition hover:-translate-y-0.5 hover:bg-[#345342]">{step === steps.length - 1 ? "Find my match" : "Continue"}<ArrowRight size={18} /></button></div></div></section>;
 }
