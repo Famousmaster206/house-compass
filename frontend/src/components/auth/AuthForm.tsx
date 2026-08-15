@@ -67,29 +67,28 @@ export function AuthForm({ mode }: AuthFormProps) {
             onChange={(e) => setEmail(e.target.value)}
             disabled={!configured}
           />
-          <div className="relative">
-            <Input
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={!configured}
-              className="pr-11"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((v) => !v)}
-              disabled={!configured}
-              className="absolute right-3 top-[34px] text-muted transition-colors hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-              tabIndex={-1}
-            >
-              {showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
-            </button>
-          </div>
+          <Input
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            autoComplete={mode === "login" ? "current-password" : "new-password"}
+            required
+            minLength={6}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={!configured}
+            trailingAdornment={
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                disabled={!configured}
+                className="text-muted transition-colors hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
+              </button>
+            }
+          />
           <AnimatePresence>
             {error &&
               (reducedMotion ? (

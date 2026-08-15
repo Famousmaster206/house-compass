@@ -1,34 +1,42 @@
-import { forwardRef, type InputHTMLAttributes } from "react";
+import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
 import clsx from "clsx";
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   hint?: string;
   error?: string;
+  /** Rendered inside the input box, vertically centered against the input itself (not the label). */
+  trailingAdornment?: ReactNode;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, hint, error, id, className, ...props }, ref) => {
+  ({ label, hint, error, id, className, trailingAdornment, ...props }, ref) => {
     const inputId = id ?? `input-${label.replace(/\s+/g, "-").toLowerCase()}`;
     return (
       <div className="flex flex-col gap-1.5">
         <label htmlFor={inputId} className="text-sm font-semibold text-text">
           {label}
         </label>
-        <input
-          ref={ref}
-          id={inputId}
-          className={clsx(
-            "rounded-xl border border-sandstone bg-white px-4 py-2.5 text-text",
-            "transition-[border-color,box-shadow] duration-200",
-            "focus-visible:outline-none focus-visible:border-primary focus-visible:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]",
-            error && "border-difficult",
-            className
+        <div className="relative flex items-center">
+          <input
+            ref={ref}
+            id={inputId}
+            className={clsx(
+              "w-full rounded-xl border border-sandstone bg-white px-4 py-2.5 text-text",
+              "transition-[border-color,box-shadow] duration-200",
+              "focus-visible:outline-none focus-visible:border-primary focus-visible:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]",
+              error && "border-difficult",
+              trailingAdornment && "pr-11",
+              className
+            )}
+            aria-invalid={!!error}
+            aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
+            {...props}
+          />
+          {trailingAdornment && (
+            <div className="absolute right-3 flex items-center justify-center">{trailingAdornment}</div>
           )}
-          aria-invalid={!!error}
-          aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
-          {...props}
-        />
+        </div>
         {hint && !error && (
           <span id={`${inputId}-hint`} className="text-xs text-muted">
             {hint}
