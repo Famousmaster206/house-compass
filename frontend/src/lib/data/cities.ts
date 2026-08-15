@@ -93,7 +93,7 @@ export const cities: City[] = [
     name: "Scottsdale",
     region: "Maricopa County",
     description:
-      "Upscale desert living with resorts, golf courses, and vibrant nightlife. The priciest city on this list.",,
+      "Upscale desert living with resorts, golf courses, and vibrant nightlife. The priciest city on this list.",
     rent1BR: 1850,
     rent3BR: 2650,
     avgUtilities: 240,
