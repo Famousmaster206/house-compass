@@ -62,3 +62,17 @@ export async function apiPost<T>(path: string, body: unknown, init?: RequestInit
   }
   return res.json() as Promise<T>;
 }
+
+export async function generateAiOverview(data: {
+  cityName: string;
+  monthlyIncome: number;
+  expenses: Record<string, number>;
+  leftover: number;
+  affordabilityRating: string;
+  householdSize: number;
+  roommates: number;
+  hasCar: boolean;
+  bedrooms: number;
+}): Promise<{ overview: string; success: boolean }> {
+  return apiPost<{ overview: string; success: boolean }>("/api/ai-overview", data);
+}

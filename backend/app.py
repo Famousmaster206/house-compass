@@ -1,9 +1,19 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
+import os
+from dotenv import load_dotenv
+import google.generativeai as genai
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app) # CRITICAL: Allows your React app to talk to Flask
+
+# Configure Gemini API
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
 
 # Load mock data into memory
 with open('mock_data.json', 'r') as f:
@@ -22,6 +32,71 @@ def get_recommendations():
     
     # For now, just return all properties so frontend can test
     return jsonify(properties)
+
+@app.route('/api/ai-overview', methods=['POST'])
+def generate_ai_overview():
+    """Generate an AI-powered overview of the user's housing affordability based on their calculation results."""
+    if not GEMINI_API_KEY:
+        return jsonify({"error": "Gemini API key not configured"}), 500
+    
+    data = request.json
+    
+    # Extract calculation data
+    city_name = data.get('cityName', 'your city')
+    monthly_income = data.get('monthlyIncome', 0)
+    expenses = data.get('expenses', {})
+    leftover = data.get('leftover', 0)
+    affordability_rating = data.get('affordabilityRating', 'unknown')
+    household_size = data.get('householdSize', 1)
+    roommates = data.get('roommates', 0)
+    has_car = data.get('hasCar', False)
+    bedrooms = data.get('bedrooms', 1)
+    
+    # Build the prompt
+    prompt = f"""Based on the following housing affordability calculation for someone living in {city_name}, provide a personalized AI-powered financial overview and insights. Be conversational, encouraging, and practical.
+
+USER'S FINANCIAL SITUATION:
+- Monthly Net Income: ${monthly_income:,}
+- Monthly Expenses: ${expenses.get('total', 0):,}
+- Estimated Monthly Leftover: ${leftover:,}
+- Affordability Rating: {affordability_rating}
+
+EXPENSE BREAKDOWN:
+- Housing: ${expenses.get('housing', 0):,}
+- Utilities: ${expenses.get('utilities', 0):,}
+- Transportation: ${expenses.get('transportation', 0):,}
+- Groceries: ${expenses.get('groceries', 0):,}
+- Dining Out: ${expenses.get('dining', 0):,}
+- Lifestyle/Entertainment: ${expenses.get('lifestyle', 0):,}
+
+HOUSEHOLD DETAILS:
+- Household Size: {household_size} person(s)
+- Roommates: {roommates}
+- Housing: {bedrooms} bedroom(s)
+- Transportation: {"Has a car" if has_car else "No car (public transit/rideshare)"}
+
+Please provide:
+1. A brief overall assessment of their financial position in {city_name}
+2. Key insights about their expense distribution (what stands out?)
+3. Specific, actionable recommendations for optimizing their budget
+4. Potential areas of concern or opportunities
+5. Encouragement and context about their affordability level
+
+Keep the tone friendly, practical, and empowering. Focus on actionable insights they can use."""
+
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        
+        return jsonify({
+            "overview": response.text,
+            "success": True
+        })
+    except Exception as e:
+        return jsonify({
+            "error": f"Failed to generate overview: {str(e)}",
+            "success": False
+        }), 500
 
 if __name__ == '__main__':
     # Runs on port 5000 by default
