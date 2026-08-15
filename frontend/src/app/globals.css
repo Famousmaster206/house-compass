@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+:root {
+  /* Core brand palette (AZ desert x fintech) */
+  --background: #faf7f2;
+  --foreground: #2c241f;
+  --color-primary: #e97832;
+  --color-primary-dark: #c95c20;
+  --color-sandstone: #d8b58a;
+  --color-sandstone-light: #f3e7d3;
+  --color-text: #2c241f;
+  --color-muted: #756b63;
+
+  /* Affordability semantics */
+  --color-comfortable: #3f8556;
+  --color-moderate: #b8862e;
+  --color-tight: #c95c20;
+  --color-difficult: #b23a2e;
+
+  /* Chart categorical (validated, dataviz skill) */
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-5: #e87ba4;
+  --chart-6: #008300;
+  --chart-7: #4a3aa7;
+  --chart-8: #e34948;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-sandstone: var(--color-sandstone);
+  --color-sandstone-light: var(--color-sandstone-light);
+  --color-text: var(--color-text);
+  --color-muted: var(--color-muted);
+  --color-comfortable: var(--color-comfortable);
+  --color-moderate: var(--color-moderate);
+  --color-tight: var(--color-tight);
+  --color-difficult: var(--color-difficult);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+* {
+  border-color: var(--color-sandstone);
+}
