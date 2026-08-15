@@ -16,7 +16,7 @@ export interface ParallaxProps {
  * Subtle scroll-based parallax: translates children a small distance (capped
  * at `offset`, default well under 20px) as the wrapped element moves through
  * the viewport. Uses `useScroll`'s scroll-linked transform (GPU transform
- * only), not layout properties. No-op under reduced-motion — renders a plain
+ * only), not layout properties. No-op under reduced-motion; renders a plain
  * static div.
  */
 export function Parallax({ children, offset = 16, className }: ParallaxProps) {

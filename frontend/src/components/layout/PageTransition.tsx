@@ -7,7 +7,7 @@ import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
 /**
  * Light fade/slide-in on route content mount, keyed on pathname. Wraps only
- * the routed page content inside `<main>` — Navbar and Footer stay outside
+ * the routed page content inside `<main>`. Navbar and Footer stay outside
  * so they never remount on navigation. Kept fast (180ms) and subtle, not a
  * full-screen loader.
  *

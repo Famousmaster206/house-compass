@@ -1,4 +1,4 @@
-"""RentCast API client — server-side only.
+"""RentCast API client (server-side only).
 
 The RentCast API key must never be sent to the browser. Keep it here, read
 from the environment (RENTCAST_API_KEY), and only ever call RentCast from
@@ -6,7 +6,7 @@ this backend process. The frontend calls our own /api/rentcast/* routes,
 which proxy to RentCast and strip out anything key-related.
 
 Responses are cached in memory per zip code for CACHE_TTL_SECONDS to avoid
-re-billing RentCast on every page load — RentCast bills per API call. This
+re-billing RentCast on every page load. RentCast bills per API call; this
 cache is process-local and resets on server restart/redeploy; that's an
 acceptable tradeoff for an MVP with a small, fixed set of Arizona cities.
 """

@@ -1,7 +1,7 @@
 // Converts a user's current, real-world monthly expenses in an outside city
 // into an equivalent estimated budget in an Arizona city, using each city's
 // cost-of-living index as a simple ratio, applied per expense category (not
-// just one lump sum) — this mirrors the category breakdown used by the
+// just one lump sum). This mirrors the category breakdown used by the
 // "Build my budget" calculator (see lib/services/calculator.ts) so the two
 // flows produce comparable, equally detailed results.
 //

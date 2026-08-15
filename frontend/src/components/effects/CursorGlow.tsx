@@ -11,7 +11,7 @@ const LERP_FACTOR = 0.12;
  * Desktop-only (fine pointer) and disabled under reduced-motion.
  *
  * Perf notes: position is tracked entirely in refs + direct style mutation
- * inside a rAF loop — no React state updates on mousemove, so this never
+ * inside a rAF loop. No React state updates on mousemove, so this never
  * triggers a re-render. Mount this once, high in the tree (e.g. behind a
  * hero section or as a page-level accent), not once per card.
  */

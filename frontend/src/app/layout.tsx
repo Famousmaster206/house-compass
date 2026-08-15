@@ -11,7 +11,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "House Compass — Can You Afford Arizona?",
+  title: "House Compass: Can You Afford Arizona?",
   description:
     "Estimate your real monthly cost of living across Arizona cities and see how much you'd have left over each month.",
 };

@@ -3,7 +3,7 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from "recharts";
 import { formatCurrency, formatCurrencyCompact } from "@/lib/utils/format";
 
-// Static sample numbers for the homepage preview — not live-calculated.
+// Static sample numbers for the homepage preview (not live-calculated).
 const sample = [
   { name: "Tucson", leftover: 1180, rating: "comfortable" },
   { name: "Glendale", leftover: 980, rating: "comfortable" },
@@ -40,7 +40,7 @@ export function HomePreviewChart() {
         </BarChart>
       </ResponsiveContainer>
       <p className="mt-1 text-center text-xs text-muted">
-        Sample data — estimated monthly leftover for a $5,000/mo income, 1BR apartment, one car.
+        Sample data (estimated monthly leftover for a $5,000/mo income, 1BR apartment, one car).
       </p>
     </div>
   );

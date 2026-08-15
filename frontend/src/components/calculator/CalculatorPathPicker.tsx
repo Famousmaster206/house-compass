@@ -18,7 +18,7 @@ export function CalculatorPathPicker() {
           </div>
           <h2 className="mt-3 font-bold text-text">Build my budget</h2>
           <p className="mt-1 flex-1 text-sm text-muted">
-            Start fresh — enter your income and lifestyle to estimate affordability in an Arizona city.
+            Start fresh; enter your income and lifestyle to estimate affordability in an Arizona city.
           </p>
           <p className="mt-4 flex items-center gap-1 text-sm font-semibold text-primary">
             Use the calculator below <ArrowRight size={14} aria-hidden="true" />

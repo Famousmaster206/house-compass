@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 export interface GridBackgroundProps {
-  /** Renders a soft radial orange glow centered behind the grid — for hero sections. */
+  /** Renders a soft radial orange glow centered behind the grid (for hero sections). */
   glow?: boolean;
   className?: string;
 }
@@ -9,7 +9,7 @@ export interface GridBackgroundProps {
 /**
  * Subtle animated desert-grid backdrop. Pure CSS: a repeating linear-gradient
  * grid pattern masked to fade out toward the edges, with an optional radial
- * glow layer. No DOM grid of elements — this is two absolutely-positioned
+ * glow layer. No DOM grid of elements; this is two absolutely-positioned
  * layers behind whatever content is placed on top (parent must be
  * `relative`).
  *

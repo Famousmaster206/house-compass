@@ -1,4 +1,4 @@
-// Static lookup tables — Sample/estimated data
+// Static lookup tables with sample/estimated data
 // TODO: replace grocery/dining multipliers with a live cost-of-living API
 // TODO: replace gas price estimate with a live gas price API (e.g. AAA/EIA feed)
 // TODO: replace car insurance estimate with a real insurance-rate API by city/zip

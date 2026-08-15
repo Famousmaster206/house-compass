@@ -12,11 +12,11 @@ export interface SpotlightCardProps extends HTMLAttributes<HTMLDivElement> {
 
 /**
  * Wraps card content with a cursor-following radial spotlight, a hover
- * lift/scale, and a brighter border — the shared hover treatment used for
+ * lift/scale, and a brighter border. The shared hover treatment used for
  * city cards, home page cards, etc.
  *
  * On touch devices / reduced-motion, degrades to a plain CSS hover state
- * (lift + border only, no cursor tracking) — the spotlight layer simply
+ * (lift + border only, no cursor tracking). The spotlight layer simply
  * isn't rendered and pointer tracking never attaches, so there's no wasted
  * work on devices that can't benefit from it.
  *

@@ -19,13 +19,13 @@ export interface TaxEstimateResult {
 /**
  * Placeholder: currently a pass-through (assumes the user enters
  * take-home/net monthly income directly in the calculator). Not used for
- * real tax math yet — see TODO above.
+ * real tax math yet. See TODO above.
  */
 export function estimateNetIncome(
   input: TaxEstimateInput
 ): TaxEstimateResult {
   return {
     estimatedNetAnnualIncome: input.grossAnnualIncome,
-    note: "Tax calculation not yet implemented — treat input income as net/take-home for now.",
+    note: "Tax calculation not yet implemented. Treat input income as net/take-home for now.",
   };
 }
