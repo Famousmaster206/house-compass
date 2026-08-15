@@ -47,7 +47,7 @@ export function Slider({
         step={step}
         value={value}
         onChange={handleChange}
-        className="w-full accent-[var(--color-primary)] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="az-slider w-full accent-[var(--color-primary)] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         aria-describedby={hint ? `${id}-hint` : undefined}
       />
       {hint && (

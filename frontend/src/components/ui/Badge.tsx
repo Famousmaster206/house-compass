@@ -1,7 +1,11 @@
+"use client";
+
 import type { HTMLAttributes } from "react";
 import clsx from "clsx";
+import { AnimatePresence, motion } from "motion/react";
 import type { AffordabilityRatingId } from "@/lib/config/affordability";
 import { CheckCircle2, CircleDot, TriangleAlert, CircleAlert } from "lucide-react";
+import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
 export interface AffordabilityBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   rating: AffordabilityRatingId;
@@ -24,7 +28,9 @@ const ratingBg: Record<AffordabilityRatingId, string> = {
 
 export function AffordabilityBadge({ rating, label, className, ...props }: AffordabilityBadgeProps) {
   const Icon = ratingIcon[rating];
-  return (
+  const reducedMotion = usePrefersReducedMotion();
+
+  const badge = (
     <span
       className={clsx(
         "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold",
@@ -36,6 +42,22 @@ export function AffordabilityBadge({ rating, label, className, ...props }: Affor
       <Icon size={16} aria-hidden="true" />
       {label}
     </span>
+  );
+
+  if (reducedMotion) return badge;
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.span
+        key={rating}
+        initial={{ opacity: 0, y: 6, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        style={{ display: "inline-flex" }}
+      >
+        {badge}
+      </motion.span>
+    </AnimatePresence>
   );
 }
 

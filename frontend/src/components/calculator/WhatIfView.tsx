@@ -1,14 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Slider } from "@/components/ui/Slider";
 import { Select } from "@/components/ui/Select";
 import { AffordabilityBadge } from "@/components/ui/Badge";
 import { WhatIfChart, type WhatIfScenarioPoint } from "@/components/charts/WhatIfChart";
+import { AnimatedNumber } from "@/components/effects/AnimatedNumber";
+import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import { cities } from "@/lib/data/cities";
 import { calculateAffordability, runWhatIfScenario, type CalculatorInput } from "@/lib/services/calculator";
 import { formatCurrency } from "@/lib/utils/format";
+import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
 const BASE: CalculatorInput = {
   monthlyIncome: 5000,
@@ -24,6 +29,7 @@ const BASE: CalculatorInput = {
 };
 
 export function WhatIfView() {
+  const reducedMotion = usePrefersReducedMotion();
   const [citySlug, setCitySlug] = useState(BASE.citySlug);
   const [income, setIncome] = useState(BASE.monthlyIncome);
   const [rent, setRent] = useState<number | undefined>(undefined);
@@ -44,6 +50,27 @@ export function WhatIfView() {
   const baselineResult = useMemo(() => calculateAffordability(BASE), []);
   const currentResult = calculateAffordability(currentInput);
   const diff = currentResult.leftover - baselineResult.leftover;
+
+  // Tracks the change since the *previous* scenario (not the baseline) so the
+  // impact indicator reflects "what your last tweak just did," and fades out
+  // shortly after each change settles. `tokenRef` is a monotonic counter (not
+  // a timestamp) used purely as a React key to force the flash to re-trigger
+  // on consecutive changes — it's mutated inside the effect, never read
+  // during render.
+  const prevLeftoverRef = useRef(currentResult.leftover);
+  const tokenRef = useRef(0);
+  const [impact, setImpact] = useState<{ delta: number; token: number } | null>(null);
+
+  useEffect(() => {
+    const prev = prevLeftoverRef.current;
+    const delta = currentResult.leftover - prev;
+    prevLeftoverRef.current = currentResult.leftover;
+    if (delta === 0) return;
+    tokenRef.current += 1;
+    setImpact({ delta, token: tokenRef.current });
+    const timeout = setTimeout(() => setImpact(null), 2600);
+    return () => clearTimeout(timeout);
+  }, [currentResult.leftover]);
 
   const scenarios: WhatIfScenarioPoint[] = useMemo(() => {
     const named: { name: string; overrides: Partial<CalculatorInput> }[] = [
@@ -116,35 +143,64 @@ export function WhatIfView() {
         </Card>
 
         <div className="flex flex-col gap-6">
-          <Card>
+          <Card className="relative overflow-hidden">
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <p className="text-xs font-semibold text-muted">Baseline</p>
-                <p className="mt-1 text-xl font-bold tabular-nums text-text">{formatCurrency(baselineResult.leftover)}</p>
+                <p className="mt-1 text-xl font-bold tabular-nums text-text">
+                  <AnimatedNumber value={baselineResult.leftover} format="currency" />
+                </p>
               </div>
               <div>
                 <p className="text-xs font-semibold text-muted">New scenario</p>
                 <p className="mt-1 text-xl font-bold tabular-nums" style={{ color: currentResult.affordability.color }}>
-                  {formatCurrency(currentResult.leftover)}
+                  <AnimatedNumber value={currentResult.leftover} format="currency" />
                 </p>
               </div>
               <div>
                 <p className="text-xs font-semibold text-muted">Difference</p>
                 <p className={`mt-1 text-xl font-bold tabular-nums ${diff >= 0 ? "text-comfortable" : "text-difficult"}`}>
                   {diff >= 0 ? "+" : ""}
-                  {formatCurrency(diff)}
+                  <AnimatedNumber value={diff} format="currency" />
                 </p>
               </div>
             </div>
             <div className="mt-4 flex justify-center">
               <AffordabilityBadge rating={currentResult.affordability.rating} label={currentResult.affordability.label} />
             </div>
+
+            {/* Impact indicator: flashes in after a slider/toggle change, shows the
+                delta from the previous scenario (not the baseline), then fades. */}
+            <AnimatePresence>
+              {!reducedMotion && impact && (
+                <motion.div
+                  key={impact.token}
+                  initial={{ opacity: 0, y: -8, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.9 }}
+                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                  className={`absolute right-4 top-4 flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${
+                    impact.delta >= 0 ? "bg-comfortable/10 text-comfortable" : "bg-difficult/10 text-difficult"
+                  }`}
+                >
+                  {impact.delta >= 0 ? (
+                    <TrendingUp size={14} aria-hidden="true" />
+                  ) : (
+                    <TrendingDown size={14} aria-hidden="true" />
+                  )}
+                  {impact.delta >= 0 ? "+" : ""}
+                  {formatCurrency(impact.delta)}/mo
+                </motion.div>
+              )}
+            </AnimatePresence>
           </Card>
 
-          <Card>
-            <p className="text-sm font-semibold text-muted">Leftover money across named scenarios</p>
-            <WhatIfChart scenarios={scenarios} />
-          </Card>
+          <ScrollReveal>
+            <Card>
+              <p className="text-sm font-semibold text-muted">Leftover money across named scenarios</p>
+              <WhatIfChart scenarios={scenarios} />
+            </Card>
+          </ScrollReveal>
         </div>
       </div>
       <p className="mt-6 text-center text-xs text-muted">
