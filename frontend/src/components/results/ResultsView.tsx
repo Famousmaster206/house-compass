@@ -13,6 +13,7 @@ import { CityComparisonChart } from "@/components/charts/CityComparisonChart";
 import { cities } from "@/lib/data/cities";
 import { compareCities, type CalculatorInput, type CalculationResult } from "@/lib/services/calculator";
 import { formatCurrency } from "@/lib/utils/format";
+import { ScrollReveal, ScrollRevealGroup } from "@/components/effects/ScrollReveal";
 
 // Results are handed off from /calculate via sessionStorage (see CalculatorForm) —
 // simplest robust approach for a purely client-side MVP with no backend to persist
@@ -71,75 +72,81 @@ export function ResultsView() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+      <ScrollRevealGroup className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <AffordabilityCard result={primary} />
         <Card>
           <p className="text-sm font-semibold text-muted">Where your money goes</p>
           <ExpenseChart expenses={primary.expenses} />
         </Card>
-      </div>
+      </ScrollRevealGroup>
 
-      <Card className="mt-8">
-        <p className="text-sm font-semibold text-muted">What affects your cost most</p>
-        <p className="mt-2 text-lg text-text">
-          Your biggest expense in {primary.cityName} is{" "}
-          <span className="font-bold capitalize">{biggestCategory[0]}</span> at{" "}
-          <span className="font-bold">{formatCurrency(biggestCategory[1])}</span>/month. Try adjusting
-          roommates or car ownership on the{" "}
-          <Link href="/what-if" className="font-semibold text-primary hover:underline">
-            What-If page
-          </Link>{" "}
-          to see the impact.
-        </p>
-      </Card>
+      <ScrollReveal>
+        <Card className="mt-8">
+          <p className="text-sm font-semibold text-muted">What affects your cost most</p>
+          <p className="mt-2 text-lg text-text">
+            Your biggest expense in {primary.cityName} is{" "}
+            <span className="font-bold capitalize">{biggestCategory[0]}</span> at{" "}
+            <span className="font-bold">{formatCurrency(biggestCategory[1])}</span>/month. Try adjusting
+            roommates or car ownership on the{" "}
+            <Link href="/what-if" className="font-semibold text-primary hover:underline">
+              What-If page
+            </Link>{" "}
+            to see the impact.
+          </p>
+        </Card>
+      </ScrollReveal>
 
-      <Card className="mt-8">
-        <p className="text-sm font-semibold text-muted">How your city compares</p>
-        <CityComparisonChart results={allResults} />
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-sandstone/50 text-muted">
-                <th className="py-2 pr-4 font-semibold">City</th>
-                <th className="py-2 pr-4 font-semibold">Est. leftover</th>
-                <th className="py-2 pr-4 font-semibold">Rating</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sorted.map((r) => (
-                <tr
-                  key={r.citySlug}
-                  className="cursor-pointer border-b border-sandstone/30 hover:bg-sandstone-light/50"
-                  onClick={() => router.push(`/cities/${r.citySlug}`)}
-                >
-                  <td className="py-2.5 pr-4 font-semibold text-text">{r.cityName}</td>
-                  <td className="py-2.5 pr-4 tabular-nums text-text">{formatCurrency(r.leftover)}</td>
-                  <td className="py-2.5 pr-4">
-                    <AffordabilityBadge rating={r.affordability.rating} label={r.affordability.label} />
-                  </td>
+      <ScrollReveal>
+        <Card className="mt-8">
+          <p className="text-sm font-semibold text-muted">How your city compares</p>
+          <CityComparisonChart results={allResults} />
+          <div className="mt-6 overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-sandstone/50 text-muted">
+                  <th className="py-2 pr-4 font-semibold">City</th>
+                  <th className="py-2 pr-4 font-semibold">Est. leftover</th>
+                  <th className="py-2 pr-4 font-semibold">Rating</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+              </thead>
+              <tbody>
+                {sorted.map((r) => (
+                  <tr
+                    key={r.citySlug}
+                    className="cursor-pointer border-b border-sandstone/30 transition-colors hover:bg-sandstone-light/50"
+                    onClick={() => router.push(`/cities/${r.citySlug}`)}
+                  >
+                    <td className="py-2.5 pr-4 font-semibold text-text">{r.cityName}</td>
+                    <td className="py-2.5 pr-4 tabular-nums text-text">{formatCurrency(r.leftover)}</td>
+                    <td className="py-2.5 pr-4">
+                      <AffordabilityBadge rating={r.affordability.rating} label={r.affordability.label} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </ScrollReveal>
 
-      <Card className="mt-8">
-        <p className="text-sm font-semibold text-muted">Plain-language recommendation</p>
-        <p className="mt-2 text-text">
-          {primary.affordability.rating === "comfortable" &&
-            `Based on your inputs, ${primary.cityName} looks comfortably affordable — you'd have healthy room left over each month.`}
-          {primary.affordability.rating === "moderate" &&
-            `${primary.cityName} looks moderately affordable for you — manageable, but consider a budget cushion for surprises.`}
-          {primary.affordability.rating === "tight" &&
-            `Your budget in ${primary.cityName} is tight. Consider a roommate, a smaller apartment, or cutting discretionary spending.`}
-          {primary.affordability.rating === "difficult" &&
-            `Based on your current inputs, ${primary.cityName} may be difficult to afford. Try the What-If tool to see what changes would help.`}
-        </p>
-        <p className="mt-2 text-xs text-muted">
-          This is an estimate for informational purposes only — not financial advice.
-        </p>
-      </Card>
+      <ScrollReveal>
+        <Card className="mt-8">
+          <p className="text-sm font-semibold text-muted">Plain-language recommendation</p>
+          <p className="mt-2 text-text">
+            {primary.affordability.rating === "comfortable" &&
+              `Based on your inputs, ${primary.cityName} looks comfortably affordable — you'd have healthy room left over each month.`}
+            {primary.affordability.rating === "moderate" &&
+              `${primary.cityName} looks moderately affordable for you — manageable, but consider a budget cushion for surprises.`}
+            {primary.affordability.rating === "tight" &&
+              `Your budget in ${primary.cityName} is tight. Consider a roommate, a smaller apartment, or cutting discretionary spending.`}
+            {primary.affordability.rating === "difficult" &&
+              `Based on your current inputs, ${primary.cityName} may be difficult to afford. Try the What-If tool to see what changes would help.`}
+          </p>
+          <p className="mt-2 text-xs text-muted">
+            This is an estimate for informational purposes only — not financial advice.
+          </p>
+        </Card>
+      </ScrollReveal>
 
       <div className="mt-10 flex justify-center">
         <Link href="/what-if">

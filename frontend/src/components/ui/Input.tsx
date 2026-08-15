@@ -20,7 +20,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           className={clsx(
             "rounded-xl border border-sandstone bg-white px-4 py-2.5 text-text",
-            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary",
+            "transition-[border-color,box-shadow] duration-200",
+            "focus-visible:outline-none focus-visible:border-primary focus-visible:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]",
             error && "border-difficult",
             className
           )}

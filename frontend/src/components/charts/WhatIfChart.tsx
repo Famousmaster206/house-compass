@@ -34,7 +34,14 @@ export function WhatIfChart({ scenarios }: WhatIfChartProps) {
               color: "var(--color-text)",
             }}
           />
-          <Bar dataKey="leftover" radius={[6, 6, 0, 0]} maxBarSize={48}>
+          <Bar
+            dataKey="leftover"
+            radius={[6, 6, 0, 0]}
+            maxBarSize={48}
+            isAnimationActive
+            animationDuration={350}
+            animationEasing="ease-out"
+          >
             {scenarios.map((entry) => (
               <Cell
                 key={entry.name}

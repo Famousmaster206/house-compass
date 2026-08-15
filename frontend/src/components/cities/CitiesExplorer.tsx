@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 import { cities } from "@/lib/data/cities";
 import { CityCard } from "@/components/cities/CityCard";
 import { Select } from "@/components/ui/Select";
+import { ScrollRevealGroup } from "@/components/effects/ScrollReveal";
 
 export interface CitiesExplorerProps {
   initialSort?: string;
@@ -75,11 +76,14 @@ export function CitiesExplorer({ initialSort = "name", initialFilter = "all" }: 
       {filtered.length === 0 ? (
         <p className="mt-12 text-center text-muted">No cities match your search.</p>
       ) : (
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ScrollRevealGroup
+          key={`${search}-${sort}-${filter}`}
+          className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {filtered.map((city) => (
             <CityCard key={city.slug} city={city} />
           ))}
-        </div>
+        </ScrollRevealGroup>
       )}
     </div>
   );

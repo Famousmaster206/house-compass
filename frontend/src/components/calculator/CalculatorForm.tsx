@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "motion/react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -9,6 +10,7 @@ import { Select } from "@/components/ui/Select";
 import { Card } from "@/components/ui/Card";
 import { cities } from "@/lib/data/cities";
 import type { CalculatorInput } from "@/lib/services/calculator";
+import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 
 const STEPS = ["Personal", "Housing", "Transportation", "Food", "Utilities", "Lifestyle", "City"] as const;
 
@@ -28,8 +30,10 @@ const DEFAULTS: CalculatorInput = {
 export function CalculatorForm() {
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
   const [input, setInput] = useState<CalculatorInput>(DEFAULTS);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const reducedMotion = usePrefersReducedMotion();
 
   function update<K extends keyof CalculatorInput>(key: K, value: CalculatorInput[K]) {
     setInput((prev) => ({ ...prev, [key]: value }));
@@ -59,11 +63,17 @@ export function CalculatorForm() {
 
   function goNext() {
     if (!validateStep()) return;
-    if (step < STEPS.length - 1) setStep(step + 1);
+    if (step < STEPS.length - 1) {
+      setDirection(1);
+      setStep(step + 1);
+    }
   }
 
   function goBack() {
-    if (step > 0) setStep(step - 1);
+    if (step > 0) {
+      setDirection(-1);
+      setStep(step - 1);
+    }
   }
 
   function handleSubmit() {
@@ -102,7 +112,16 @@ export function CalculatorForm() {
         Step {step + 1} of {STEPS.length}: {STEPS[step]}
       </p>
 
-      <Card>
+      <Card className="overflow-hidden">
+        <AnimatePresence mode="wait" custom={direction} initial={false}>
+          <motion.div
+            key={step}
+            custom={direction}
+            initial={reducedMotion ? false : { opacity: 0, x: direction * 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={reducedMotion ? undefined : { opacity: 0, x: direction * -24 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          >
         {step === 0 && (
           <div className="flex flex-col gap-5">
             <Input
@@ -242,6 +261,8 @@ export function CalculatorForm() {
             />
           </div>
         )}
+          </motion.div>
+        </AnimatePresence>
 
         <div className="mt-8 flex items-center justify-between">
           <Button variant="ghost" onClick={goBack} disabled={step === 0} type="button">

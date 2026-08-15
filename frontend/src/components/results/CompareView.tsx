@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { compareCities, type CalculatorInput } from "@/lib/services/calculator";
 import { getAllCitySlugs } from "@/lib/data/cities";
+import { ScrollReveal, ScrollRevealGroup } from "@/components/effects/ScrollReveal";
 
 export interface CompareViewProps {
   initialCitySlugs: string[];
@@ -65,16 +66,18 @@ export function CompareView({ initialCitySlugs }: CompareViewProps) {
         <p className="mt-8 text-center text-muted">Select at least 2 cities to compare.</p>
       ) : (
         <>
-          <Card className="mt-8">
-            <p className="text-sm font-semibold text-muted">Estimated monthly leftover</p>
-            <CityComparisonChart results={results} />
-          </Card>
+          <ScrollReveal>
+            <Card className="mt-8">
+              <p className="text-sm font-semibold text-muted">Estimated monthly leftover</p>
+              <CityComparisonChart results={results} />
+            </Card>
+          </ScrollReveal>
 
-          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <ScrollRevealGroup className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
             {results.map((r) => (
               <AffordabilityCard key={r.citySlug} result={r} />
             ))}
-          </div>
+          </ScrollRevealGroup>
         </>
       )}
     </div>

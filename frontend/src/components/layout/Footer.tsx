@@ -20,16 +20,16 @@ export function Footer() {
             <div>
               <h4 className="text-sm font-bold text-text">Product</h4>
               <ul className="mt-3 flex flex-col gap-2 text-sm text-muted">
-                <li><Link href="/about" className="hover:text-primary">About</Link></li>
-                <li><Link href="/about" className="hover:text-primary">Methodology</Link></li>
-                <li><Link href="/about" className="hover:text-primary">Data Sources</Link></li>
+                <li><Link href="/about" className="transition-colors hover:text-primary">About</Link></li>
+                <li><Link href="/about" className="transition-colors hover:text-primary">Methodology</Link></li>
+                <li><Link href="/about" className="transition-colors hover:text-primary">Data Sources</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-bold text-text">Legal</h4>
               <ul className="mt-3 flex flex-col gap-2 text-sm text-muted">
-                <li><Link href="/privacy" className="hover:text-primary">Privacy</Link></li>
-                <li><Link href="/terms" className="hover:text-primary">Terms</Link></li>
+                <li><Link href="/privacy" className="transition-colors hover:text-primary">Privacy</Link></li>
+                <li><Link href="/terms" className="transition-colors hover:text-primary">Terms</Link></li>
               </ul>
             </div>
           </div>

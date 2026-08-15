@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/Card";
 import { AffordabilityBadge } from "@/components/ui/Badge";
+import { AnimatedNumber } from "@/components/effects/AnimatedNumber";
 import type { CalculationResult } from "@/lib/services/calculator";
-import { formatCurrency } from "@/lib/utils/format";
 
 export function AffordabilityCard({ result }: { result: CalculationResult }) {
   return (
@@ -18,18 +18,22 @@ export function AffordabilityCard({ result }: { result: CalculationResult }) {
         className="mt-4 text-5xl font-bold tabular-nums"
         style={{ color: result.affordability.color }}
       >
-        {formatCurrency(result.leftover)}
+        <AnimatedNumber value={result.leftover} format="currency" />
       </p>
       <p className="mt-1 text-sm text-muted">per month, after estimated expenses</p>
 
       <div className="mt-6 grid grid-cols-2 gap-4 border-t border-sandstone/50 pt-4 text-sm">
         <div>
           <p className="text-muted">Monthly income</p>
-          <p className="font-bold text-text tabular-nums">{formatCurrency(result.monthlyIncome)}</p>
+          <p className="font-bold text-text tabular-nums">
+            <AnimatedNumber value={result.monthlyIncome} format="currency" />
+          </p>
         </div>
         <div>
           <p className="text-muted">Total estimated expenses</p>
-          <p className="font-bold text-text tabular-nums">{formatCurrency(result.totalExpenses)}</p>
+          <p className="font-bold text-text tabular-nums">
+            <AnimatedNumber value={result.totalExpenses} format="currency" />
+          </p>
         </div>
       </div>
       <p className="mt-4 text-xs text-muted">
