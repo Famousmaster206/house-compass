@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { LucideIcon } from "lucide-react";
@@ -13,7 +12,6 @@ import {
   Calculator,
   Check,
   Compass,
-  Expand,
   Heart,
   House,
   Loader2,
@@ -22,10 +20,6 @@ import {
 } from "lucide-react";
 import { generateAiPropertyOverview } from "@/lib/api/client";
 import { formatCurrency } from "@/lib/utils/format";
-import type { CalculatorInput } from "@/lib/services/calculator";
-import type { HomeSearchAnswers } from "@/components/home-search/PreferenceWizard";
-
-const CALCULATOR_STORAGE_KEY = "house-compass-calculator-input";
 
 // Sample/demo listing — hardcoded rather than pulled live from RentCast.
 // TODO: swap back to the live searchSaleListings() call once the RentCast
@@ -44,14 +38,6 @@ const SAMPLE_LISTING = {
   daysOnMarket: 14,
 };
 
-const gallery = [
-  ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85", "Desert modern home exterior"],
-  ["https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=85", "Main living room"],
-  ["https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=900&q=85", "Modern kitchen"],
-  ["https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=900&q=85", "Master bedroom"],
-  ["https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=900&q=85", "Backyard patio"],
-] as const;
-
 function estimateMonthlyPayment(price: number): number {
   // Simple 20%-down, 30-yr @ ~6.5% amortization estimate for the cost sidebar —
   // illustrative, not a mortgage quote.
@@ -62,13 +48,7 @@ function estimateMonthlyPayment(price: number): number {
   return Math.round(mortgage);
 }
 
-export function PropertySummary({
-  answers,
-  onRestart,
-}: {
-  answers: HomeSearchAnswers | null;
-  onRestart: () => void;
-}) {
+export function PropertySummary({ onRestart }: { onRestart: () => void }) {
   const router = useRouter();
   const listing = SAMPLE_LISTING;
   const price = listing.price;
@@ -85,24 +65,15 @@ export function PropertySummary({
   ];
 
   function goToCalculator() {
-    // Plugs this property's numbers into a full calculator scenario and
-    // jumps straight to /results — same sessionStorage handoff CalculatorForm
-    // uses, just pre-filled instead of collected step-by-step.
-    const input: CalculatorInput = {
-      monthlyIncome: 8000,
-      householdSize: answers?.priority === "No preference" ? 1 : 2,
-      roommates: 0,
-      bedrooms: listing.bedrooms >= 3 ? 3 : 1,
-      userProvidedRent: monthlyPayment,
-      hasCar: true,
-      monthlyCarPayment: 350,
-      diningBudget: 200,
-      includeUtilities: true,
-      lifestyleBudget: 200,
-      citySlug: listing.citySlug,
-    };
-    sessionStorage.setItem(CALCULATOR_STORAGE_KEY, JSON.stringify(input));
-    router.push("/results");
+    // Seeds the calculator's rent field with this property's estimated
+    // monthly payment via URL params — the user still walks through the
+    // rest of the form (income, household, etc.) themselves.
+    const params = new URLSearchParams({
+      rent: String(monthlyPayment),
+      city: listing.citySlug,
+      address: listing.address,
+    });
+    router.push(`/calculate?${params.toString()}`);
   }
 
   return (
@@ -117,20 +88,6 @@ export function PropertySummary({
           </div>
           <button className="inline-flex items-center gap-2 rounded-full border border-[#dcd6cb] bg-white px-4 py-2 text-sm font-bold text-[#4e5e53] transition hover:border-[#d66732] hover:text-[#c65f2e]">
             <Heart size={17} />Save home
-          </button>
-        </div>
-
-        <div className="relative grid h-[440px] grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-[2rem] bg-[#ded7ca] sm:h-[540px] sm:gap-3">
-          <div className="relative col-span-4 row-span-1 sm:col-span-2 sm:row-span-2">
-            <Image src={gallery[0][0]} alt={gallery[0][1]} fill priority sizes="(max-width: 640px) 100vw, 50vw" className="object-cover" />
-          </div>
-          {gallery.slice(1).map(([src, alt]) => (
-            <div className="relative col-span-2 overflow-hidden sm:col-span-1" key={src}>
-              <Image src={src} alt={alt} fill sizes="25vw" className="object-cover transition duration-500 hover:scale-105" />
-            </div>
-          ))}
-          <button className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-2 text-sm font-bold text-[#243b2f] shadow-lg backdrop-blur">
-            <Expand size={16} />Photos are for reference, not this exact home
           </button>
         </div>
 

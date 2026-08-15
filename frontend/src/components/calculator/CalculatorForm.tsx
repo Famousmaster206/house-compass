@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { Check, MapPin, Loader2, AlertCircle } from "lucide-react";
+import { Check, MapPin, Loader2, AlertCircle, Home } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
@@ -29,11 +29,34 @@ const DEFAULTS: CalculatorInput = {
   citySlug: "phoenix",
 };
 
+/**
+ * Reads optional starting values from the URL (?rent=&city=&address=), so a
+ * property card elsewhere in the app (e.g. home-search results) can seed the
+ * rent field without skipping the rest of the form — the user still walks
+ * through and confirms their own income/household/etc.
+ */
+function useInitialInput(): { input: CalculatorInput; seededAddress: string | null } {
+  const params = useSearchParams();
+  return useMemo(() => {
+    const rentParam = params.get("rent");
+    const cityParam = params.get("city");
+    const addressParam = params.get("address");
+    const rent = rentParam && Number(rentParam) > 0 ? Number(rentParam) : undefined;
+    const citySlug = cityParam && cities.some((c) => c.slug === cityParam) ? cityParam : DEFAULTS.citySlug;
+    return {
+      input: { ...DEFAULTS, citySlug, userProvidedRent: rent },
+      seededAddress: addressParam,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // read once on mount — the form takes over after that
+}
+
 export function CalculatorForm() {
   const router = useRouter();
+  const { input: initialInput, seededAddress } = useInitialInput();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
-  const [input, setInput] = useState<CalculatorInput>(DEFAULTS);
+  const [input, setInput] = useState<CalculatorInput>(initialInput);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const reducedMotion = usePrefersReducedMotion();
 
@@ -144,6 +167,15 @@ export function CalculatorForm() {
       <p className="mb-4 text-center text-sm font-semibold text-muted">
         Step {step + 1} of {STEPS.length}: {STEPS[step]}
       </p>
+
+      {seededAddress && (
+        <div className="mb-4 flex items-center gap-2 rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-text">
+          <Home size={16} className="shrink-0 text-primary" aria-hidden="true" />
+          <span>
+            We filled in the estimated rent for <strong>{seededAddress}</strong>. Everything else is up to you.
+          </span>
+        </div>
+      )}
 
       <Card className="overflow-hidden">
         <AnimatePresence mode="wait" custom={direction} initial={false}>

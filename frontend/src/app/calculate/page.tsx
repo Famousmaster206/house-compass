@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { CalculatorForm } from "@/components/calculator/CalculatorForm";
 import { CalculatorPathPicker } from "@/components/calculator/CalculatorPathPicker";
 
@@ -11,7 +12,9 @@ export default function CalculatePage() {
         </p>
       </div>
       <CalculatorPathPicker />
-      <CalculatorForm />
+      <Suspense fallback={null}>
+        <CalculatorForm />
+      </Suspense>
     </div>
   );
 }
