@@ -1,4 +1,4 @@
-# house-compass
+# House-Compass
 
 A comprehensive housing affordability calculator and comparison tool that helps users understand their financial situation across different cities. House Compass combines personalized financial calculations with AI-powered insights to guide housing decisions.
 
