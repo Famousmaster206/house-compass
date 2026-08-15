@@ -98,6 +98,90 @@ Keep the tone friendly, practical, and empowering. Focus on actionable insights 
             "success": False
         }), 500
 
+@app.route('/api/calculate-net-spending', methods=['POST'])
+def calculate_net_spending():
+    """
+    Calculate net spending: Total Spending - (Housing Cost + External Costs)
+    
+    Supports both rent and house purchase cost calculations.
+    Time period can be monthly or yearly.
+    
+    Request body:
+    {
+        "totalSpending": number,  # Total monthly or yearly spending
+        "housingType": "rent" | "purchase",  # Type of housing cost
+        "housingCost": number,  # Monthly rent or house price
+        "externalCosts": number,  # Additional external costs (monthly/yearly)
+        "timePeriod": "monthly" | "yearly"  # Optional, defaults to "monthly"
+    }
+    """
+    try:
+        data = request.json
+        
+        # Validate required fields
+        required_fields = ['totalSpending', 'housingType', 'housingCost', 'externalCosts']
+        if not all(field in data for field in required_fields):
+            return jsonify({
+                "error": "Missing required fields. Required: totalSpending, housingType, housingCost, externalCosts",
+                "success": False
+            }), 400
+        
+        total_spending = float(data.get('totalSpending', 0))
+        housing_type = data.get('housingType', '').lower()
+        housing_cost = float(data.get('housingCost', 0))
+        external_costs = float(data.get('externalCosts', 0))
+        time_period = data.get('timePeriod', 'monthly').lower()
+        
+        # Validate housing type
+        if housing_type not in ['rent', 'purchase']:
+            return jsonify({
+                "error": "housingType must be either 'rent' or 'purchase'",
+                "success": False
+            }), 400
+        
+        # Validate time period
+        if time_period not in ['monthly', 'yearly']:
+            return jsonify({
+                "error": "timePeriod must be either 'monthly' or 'yearly'",
+                "success": False
+            }), 400
+        
+        # Calculate net spending
+        # Formula: Total Spending - (Housing Cost + External Costs)
+        net_spending = total_spending - (housing_cost + external_costs)
+        
+        # Prepare response with breakdown
+        response = {
+            "success": True,
+            "calculation": {
+                "timePeriod": time_period,
+                "housingType": housing_type,
+                "totalSpending": round(total_spending, 2),
+                "housingCost": round(housing_cost, 2),
+                "externalCosts": round(external_costs, 2),
+                "totalDeductions": round(housing_cost + external_costs, 2),
+                "netSpending": round(net_spending, 2),
+                "spendingRatio": {
+                    "housingPercentage": round((housing_cost / total_spending * 100) if total_spending > 0 else 0, 2),
+                    "externalPercentage": round((external_costs / total_spending * 100) if total_spending > 0 else 0, 2),
+                    "netPercentage": round((net_spending / total_spending * 100) if total_spending > 0 else 0, 2)
+                }
+            }
+        }
+        
+        return jsonify(response)
+    
+    except ValueError as e:
+        return jsonify({
+            "error": f"Invalid numeric value: {str(e)}",
+            "success": False
+        }), 400
+    except Exception as e:
+        return jsonify({
+            "error": f"Calculation failed: {str(e)}",
+            "success": False
+        }), 500
+
 if __name__ == '__main__':
     # Runs on port 5000 by default
     app.run(debug=True, port=5000)
