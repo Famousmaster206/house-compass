@@ -3,13 +3,13 @@ import { Card } from "@/components/ui/Card";
 export default function AboutPage() {
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
-      <h1 className="text-3xl font-extrabold text-text">About AZ Living</h1>
+      <h1 className="text-3xl font-extrabold text-text">About House Compass</h1>
 
       <div className="mt-8 flex flex-col gap-6">
         <Card>
           <h2 className="text-lg font-bold text-text">What this is</h2>
           <p className="mt-2 text-muted">
-            AZ Living is a cost-of-living calculator focused on one question: can you actually afford to live
+            House Compass is a cost-of-living calculator focused on one question: can you actually afford to live
             in a given Arizona city? Enter your income and lifestyle assumptions and see an estimated monthly
             leftover, then tweak roommates, car ownership, and dining budget to see it change in real time.
           </p>

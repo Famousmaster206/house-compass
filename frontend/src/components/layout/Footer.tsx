@@ -9,7 +9,7 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-2 text-lg font-extrabold text-text">
               <Compass className="text-primary" size={20} aria-hidden="true" />
-              AZ Living
+              House Compass
             </div>
             <p className="mt-2 max-w-xs text-sm text-muted">
               Estimate your real cost of living across Arizona cities. Estimates only — not financial advice.
@@ -36,7 +36,7 @@ export function Footer() {
         </div>
 
         <p className="mt-8 text-xs text-muted">
-          &copy; {new Date().getFullYear()} AZ Living. Sample data — not a substitute for professional financial advice.
+          &copy; {new Date().getFullYear()} House Compass. Sample data — not a substitute for professional financial advice.
         </p>
       </div>
     </footer>

@@ -11,7 +11,7 @@ import { cities } from "@/lib/data/cities";
 import { outsideCities } from "@/lib/data/outsideCities";
 import type { RelocationInput } from "@/lib/services/relocation";
 
-const STORAGE_KEY = "az-living-relocation-input";
+const STORAGE_KEY = "house-compass-relocation-input";
 
 const DEFAULTS: RelocationInput = {
   monthlyIncome: 6000,

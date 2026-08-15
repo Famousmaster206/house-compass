@@ -17,7 +17,7 @@ import {
 } from "@/lib/services/relocation";
 import { formatCurrency, formatPercent } from "@/lib/utils/format";
 
-const STORAGE_KEY = "az-living-relocation-input";
+const STORAGE_KEY = "house-compass-relocation-input";
 
 function readStoredInput(): RelocationInput | null {
   if (typeof window === "undefined") return null;

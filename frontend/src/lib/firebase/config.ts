@@ -35,7 +35,7 @@ function warnOnce() {
   if (!warned) {
     warned = true;
     console.warn(
-      "[AZ Living] Firebase is not configured (missing or placeholder NEXT_PUBLIC_FIREBASE_* env vars). " +
+      "[House Compass] Firebase is not configured (missing or placeholder NEXT_PUBLIC_FIREBASE_* env vars). " +
         "Auth and Firestore features will be disabled until real credentials are provided in .env.local."
     );
   }
@@ -47,7 +47,7 @@ if (configured) {
     auth = getAuth(app);
     db = getFirestore(app);
   } catch (err) {
-    console.error("[AZ Living] Firebase failed to initialize:", err);
+    console.error("[House Compass] Firebase failed to initialize:", err);
     app = null;
     auth = null;
     db = null;

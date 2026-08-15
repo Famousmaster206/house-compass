@@ -47,7 +47,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         {mode === "login" ? "Log in" : "Create an account"}
       </h1>
       <p className="mt-2 text-center text-muted">
-        {mode === "login" ? "Welcome back to AZ Living." : "Save calculations and favorite cities."}
+        {mode === "login" ? "Welcome back to House Compass." : "Save calculations and favorite cities."}
       </p>
 
       <Card className="mt-8">

@@ -20,7 +20,7 @@ import { ScrollReveal, ScrollRevealGroup } from "@/components/effects/ScrollReve
 // in-flight calculator state. Read lazily via useState's initializer (not an
 // effect) so there's no extra render/setState cycle and no lint issues around
 // setState-in-effect.
-const STORAGE_KEY = "az-living-calculator-input";
+const STORAGE_KEY = "house-compass-calculator-input";
 
 function readStoredInput(): CalculatorInput | null {
   if (typeof window === "undefined") return null;

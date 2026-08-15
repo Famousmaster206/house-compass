@@ -27,7 +27,7 @@ export function Navbar() {
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2 text-lg font-extrabold text-text">
           <Compass className="text-primary" size={24} aria-hidden="true" />
-          AZ Living
+          House Compass
         </Link>
 
         <div className="hidden items-center gap-6 md:flex">

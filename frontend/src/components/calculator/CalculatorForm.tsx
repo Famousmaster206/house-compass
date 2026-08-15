@@ -80,7 +80,7 @@ export function CalculatorForm() {
     if (!validateStep()) return;
     // Simplest robust way to pass the finished CalculatorInput to /results
     // without a backend: stash it in sessionStorage and read it back there.
-    sessionStorage.setItem("az-living-calculator-input", JSON.stringify(input));
+    sessionStorage.setItem("house-compass-calculator-input", JSON.stringify(input));
     router.push("/results");
   }
 
