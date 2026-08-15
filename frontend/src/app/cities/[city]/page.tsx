@@ -1,7 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin, Users, TrendingUp } from "lucide-react";
-import { cities, getAllCitySlugs, getCityBySlug } from "@/lib/data/cities";
+import { cities, getAllCitySlugs, getCityBySlug, getCityImageUrl } from "@/lib/data/cities";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { IncomeNeededChart } from "@/components/charts/IncomeNeededChart";
@@ -21,7 +22,20 @@ export default async function CityDetailPage({ params }: PageProps<"/cities/[cit
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="relative h-56 w-full overflow-hidden rounded-3xl sm:h-72">
+        <Image
+          src={getCityImageUrl(city, 1600)}
+          alt={city.imageAlt}
+          fill
+          priority
+          sizes="(min-width: 1280px) 1152px, 100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/0" />
+        <p className="absolute bottom-2 right-3 text-[10px] font-medium text-white/70">Photo: Unsplash</p>
+      </div>
+
+      <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="flex items-center gap-1 text-sm text-muted">
             <MapPin size={14} aria-hidden="true" /> {city.region}

@@ -15,6 +15,12 @@ export interface City {
   costOfLivingIndex: number; // rough index vs. national average (100 = national avg)
   population: number; // approx, sample data
   vibe: string;
+  // Free-to-use Unsplash photo (hotlinked via images.unsplash.com, no API key/
+  // attribution required for this usage). Not the specific named city in every
+  // case — chosen for Arizona desert character. TODO: swap for a licensed,
+  // city-specific photo set when available.
+  imageId: string;
+  imageAlt: string;
 }
 
 export const cities: City[] = [
@@ -31,6 +37,8 @@ export const cities: City[] = [
     costOfLivingIndex: 104,
     population: 1650000,
     vibe: "Big-city energy, endless sunshine, and a growing food & arts scene.",
+    imageId: "1647929368246-193b86f4a3bc",
+    imageAlt: "Desert landscape at sunset in Arizona",
   },
   {
     slug: "tucson",
@@ -45,6 +53,8 @@ export const cities: City[] = [
     costOfLivingIndex: 92,
     population: 545000,
     vibe: "Relaxed, artsy, and one of the most affordable metros in the Southwest.",
+    imageId: "1762572811448-6bd7e862682b",
+    imageAlt: "Saguaro cacti on a rocky desert hillside near Tucson, Arizona",
   },
   {
     slug: "mesa",
@@ -59,6 +69,8 @@ export const cities: City[] = [
     costOfLivingIndex: 99,
     population: 510000,
     vibe: "Suburban comfort with easy freeway access to the whole Valley.",
+    imageId: "1613574726650-d1ab2eea296a",
+    imageAlt: "Red Mountain desert sunrise in Mesa, Arizona",
   },
   {
     slug: "chandler",
@@ -73,6 +85,8 @@ export const cities: City[] = [
     costOfLivingIndex: 108,
     population: 280000,
     vibe: "Tech jobs, new construction, and polished master-planned communities.",
+    imageId: "1677214771149-62edd9a75078",
+    imageAlt: "Waterfront and buildings in Chandler, Arizona",
   },
   {
     slug: "scottsdale",
@@ -87,6 +101,8 @@ export const cities: City[] = [
     costOfLivingIndex: 128,
     population: 245000,
     vibe: "Resort-town polish, high-end shopping, and desert luxury.",
+    imageId: "1743268089111-669fc11da1c7",
+    imageAlt: "Desert golf course in Scottsdale, Arizona",
   },
   {
     slug: "tempe",
@@ -101,6 +117,8 @@ export const cities: City[] = [
     costOfLivingIndex: 110,
     population: 195000,
     vibe: "College-town buzz with lakefront paths and a walkable downtown.",
+    imageId: "1613773827290-e46feb750caf",
+    imageAlt: "Aerial view of Tempe, Arizona near Arizona State University",
   },
   {
     slug: "glendale",
@@ -115,6 +133,8 @@ export const cities: City[] = [
     costOfLivingIndex: 96,
     population: 250000,
     vibe: "Game-day energy and value-priced West Valley living.",
+    imageId: "1575149536487-4c9ac49fc258",
+    imageAlt: "Rock formations in the Arizona desert",
   },
   {
     slug: "flagstaff",
@@ -129,8 +149,15 @@ export const cities: City[] = [
     costOfLivingIndex: 115,
     population: 76000,
     vibe: "Four actual seasons, pine forests, and a tight rental market.",
+    imageId: "1722280227003-2f574f6f4fe5",
+    imageAlt: "Pine forest with mountain in the background near Flagstaff, Arizona",
   },
 ];
+
+/** Builds an Unsplash CDN URL for a city's photo at the given render width. */
+export function getCityImageUrl(city: Pick<City, "imageId">, width = 800): string {
+  return `https://images.unsplash.com/photo-${city.imageId}?w=${width}&auto=format&fit=crop&q=80`;
+}
 
 export function getCityBySlug(slug: string): City | undefined {
   return cities.find((c) => c.slug === slug);

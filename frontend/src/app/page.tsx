@@ -1,10 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ClipboardList, Sliders, MapPinned, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { CityCard } from "@/components/cities/CityCard";
 import { HomePreviewChart } from "@/components/charts/HomePreviewChart";
-import { cities } from "@/lib/data/cities";
+import { cities, getCityImageUrl } from "@/lib/data/cities";
 import { GridBackground } from "@/components/effects/GridBackground";
 import { MagneticButton } from "@/components/effects/MagneticButton";
 import { SpotlightCard } from "@/components/effects/SpotlightCard";
@@ -40,6 +41,14 @@ export default function Home() {
     <div className="flex flex-col">
       {/* Hero */}
       <section className="relative overflow-hidden">
+        <Image
+          src={getCityImageUrl({ imageId: "1647929368246-193b86f4a3bc" }, 1920)}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover opacity-[0.08]"
+        />
         <GridBackground glow />
         <div className="relative mx-auto w-full max-w-6xl px-4 pt-16 pb-20 sm:px-6 sm:pt-24">
           <div className="mx-auto max-w-3xl text-center">

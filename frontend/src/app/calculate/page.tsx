@@ -1,4 +1,5 @@
 import { CalculatorForm } from "@/components/calculator/CalculatorForm";
+import { CalculatorPathPicker } from "@/components/calculator/CalculatorPathPicker";
 
 export default function CalculatePage() {
   return (
@@ -9,6 +10,7 @@ export default function CalculatePage() {
           Answer a few quick questions about your income and lifestyle. All figures are estimates.
         </p>
       </div>
+      <CalculatorPathPicker />
       <CalculatorForm />
     </div>
   );

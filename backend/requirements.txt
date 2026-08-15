@@ -1,2 +1,5 @@
 Flask==3.0.3
 gunicorn>=21.0
+flask-cors
+google-generativeai>=0.3.0
+python-dotenv
