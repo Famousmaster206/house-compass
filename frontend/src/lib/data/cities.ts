@@ -103,13 +103,13 @@ export const cities: City[] = [
     vibe: "Resort-town polish, high-end shopping, and desert luxury.",
     imageId: "1743268089111-669fc11da1c7",
     imageAlt: "Desert golf course in Scottsdale, Arizona",
-  },
+  },    
   {
     slug: "tempe",
     name: "Tempe",
     region: "Maricopa County",
     description:
-      "Home to Arizona State University. Walkable, youthful, and dense by Valley standards.",,,
+      "Home to Arizona State University. Walkable, youthful, and dense by Valley standards.",
     rent1BR: 1500,
     rent3BR: 2000,
     avgUtilities: 210,
