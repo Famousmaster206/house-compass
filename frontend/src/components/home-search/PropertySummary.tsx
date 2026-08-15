@@ -45,15 +45,9 @@ function suggestCitySlug(answers: HomeSearchAnswers | null): string {
   return "phoenix";
 }
 
-const gallery = [
-  ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85", "Desert modern home exterior"],
-  ["https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=85", "Main living room"],
-  ["https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=900&q=85", "Modern kitchen"],
-  ["https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=900&q=85", "Master bedroom"],
-  ["https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=900&q=85", "Backyard patio"],
-] as const;
-
+/** "No preference" means don't apply the filter — undefined lets the search return everything. */
 function parseBudgetLabel(label: string): number | undefined {
+  if (label === "No preference") return undefined;
   // "Up to $750K" / "$750K to $1.25M" / "$1.25M+" -> upper bound in dollars
   const matches = label.match(/\$([\d.]+)([KM])/g);
   if (!matches || matches.length === 0) return undefined;
@@ -64,6 +58,14 @@ function parseBudgetLabel(label: string): number | undefined {
   const value = Number(num) * (unit === "M" ? 1_000_000 : 1_000);
   return label.includes("+") ? value * 1.4 : value;
 }
+
+const gallery = [
+  ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85", "Desert modern home exterior"],
+  ["https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=85", "Main living room"],
+  ["https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=900&q=85", "Modern kitchen"],
+  ["https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=900&q=85", "Master bedroom"],
+  ["https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=900&q=85", "Backyard patio"],
+] as const;
 
 function estimateMonthlyPayment(price: number): number {
   // Simple 20%-down, 30-yr @ ~6.5% amortization estimate for the cost sidebar —
@@ -85,7 +87,8 @@ export function PropertySummary({
   onRestart: () => void;
 }) {
   const [status, setStatus] = useState<Status>("loading");
-  const [listing, setListing] = useState<SaleListing | null>(null);
+  const [listings, setListings] = useState<SaleListing[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const suggestedSlug = suggestCitySlug(answers);
   const suggestedCity = getCityBySlug(suggestedSlug);
@@ -111,7 +114,8 @@ export function PropertySummary({
         if (result.listings.length === 0) {
           setStatus("empty");
         } else {
-          setListing(result.listings[0]);
+          setListings(result.listings);
+          setSelectedIndex(0);
           setStatus("ready");
         }
       } catch (err) {
@@ -125,6 +129,8 @@ export function PropertySummary({
       cancelled = true;
     };
   }, [answers, suggestedCity?.name]);
+
+  const listing = listings[selectedIndex] ?? null;
 
   if (status === "loading") {
     return (
@@ -189,7 +195,8 @@ export function PropertySummary({
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-[#e9f0e5] px-4 py-2 text-sm font-extrabold text-[#35543d]">
-              <Compass size={16} />Your top House Compass match
+              <Compass size={16} />
+              {listings.length > 1 ? `${listings.length} matches found` : "Your House Compass match"}
             </div>
             {answers && !answers.citySlug && suggestedCity && (
               <div className="inline-flex items-center gap-2 rounded-full bg-[#fbeee0] px-4 py-2 text-sm font-semibold text-[#a5581f]">
@@ -274,6 +281,36 @@ export function PropertySummary({
             </button>
           </aside>
         </div>
+
+        {listings.length > 1 && (
+          <div className="mt-14">
+            <h2 className="text-xl font-extrabold text-[#253a2e]">Other matches in this search</h2>
+            <p className="mt-1 text-sm text-[#68756b]">
+              Active listings pulled live from RentCast for {suggestedCity?.name ?? "your"} search, ranked
+              against the budget you set.
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {listings.map((item, index) => (
+                <button
+                  key={item.id}
+                  onClick={() => setSelectedIndex(index)}
+                  className={`rounded-2xl border-2 p-4 text-left transition ${
+                    index === selectedIndex
+                      ? "border-[#d66732] bg-[#fffaf3] shadow-md shadow-[#d66732]/10"
+                      : "border-[#e5d9c9] bg-white hover:border-[#bdc8b8] hover:shadow-sm"
+                  }`}
+                >
+                  <p className="font-bold text-[#253a2e]">{formatCurrency(item.price ?? 0)}</p>
+                  <p className="mt-1 truncate text-sm text-[#68756b]">{item.formattedAddress ?? "Address unavailable"}</p>
+                  <p className="mt-2 text-xs text-[#8a9587]">
+                    {item.bedrooms ?? "—"} bd · {item.bathrooms ?? "—"} ba
+                    {item.squareFootage ? ` · ${item.squareFootage.toLocaleString()} sq ft` : ""}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -12,6 +12,7 @@ const steps = [
       { label: "Desert modern", image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=900&q=80", icon: House },
       { label: "Resort-style", icon: Palmtree },
       { label: "Lock & leave", image: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=900&q=80", icon: Building2 },
+      { label: "No preference", icon: Sparkles },
     ],
   },
   {
@@ -21,10 +22,29 @@ const steps = [
       { label: "A pool", image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=900&q=80", icon: Waves },
       { label: "Low-water landscaping", image: "https://images.unsplash.com/photo-1594818379496-da1e345b0ded?auto=format&fit=crop&w=900&q=80", icon: Trees },
       { label: "A modern kitchen", image: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=900&q=80", icon: Mountain },
+      { label: "No preference", icon: Sparkles },
     ],
   },
-  { eyebrow: "Your rhythm", title: "How do you want to spend your weekends?", options: [{ label: "Outdoors & trails", icon: Mountain }, { label: "Dining & design", icon: Sparkles }, { label: "Quiet and tucked away", icon: Sun }] },
-  { eyebrow: "Your north star", title: "What&apos;s your comfortable home budget?", options: [{ label: "Up to $750K", sublabel: "Thoughtful value" }, { label: "$750K to $1.25M", sublabel: "Room to roam" }, { label: "$1.25M+", sublabel: "Dream-home mode" }] },
+  {
+    eyebrow: "Your rhythm",
+    title: "How do you want to spend your weekends?",
+    options: [
+      { label: "Outdoors & trails", icon: Mountain },
+      { label: "Dining & design", icon: Sparkles },
+      { label: "Quiet and tucked away", icon: Sun },
+      { label: "No preference", icon: Sparkles },
+    ],
+  },
+  {
+    eyebrow: "Your north star",
+    title: "What&apos;s your comfortable home budget?",
+    options: [
+      { label: "Up to $750K", sublabel: "Thoughtful value" },
+      { label: "$750K to $1.25M", sublabel: "Room to roam" },
+      { label: "$1.25M+", sublabel: "Dream-home mode" },
+      { label: "No preference", sublabel: "Show me everything" },
+    ],
+  },
   {
     eyebrow: "Your city",
     title: "Where in Arizona?",
@@ -32,7 +52,7 @@ const steps = [
       { label: "Phoenix", slug: "phoenix", sublabel: "Big-city energy" },
       { label: "Scottsdale", slug: "scottsdale", sublabel: "Resort-town polish" },
       { label: "Tempe", slug: "tempe", sublabel: "Walkable & youthful" },
-      { label: "Not sure yet", slug: undefined, sublabel: "We'll suggest one" },
+      { label: "No preference", slug: undefined, sublabel: "We'll suggest one" },
     ],
   },
 ] as const;
@@ -54,7 +74,7 @@ export function PreferenceWizard({
   onSubmit: (answers: HomeSearchAnswers) => void;
 }) {
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState(["Desert modern", "A pool", "Outdoors & trails", "$750K to $1.25M", "Not sure yet"]);
+  const [answers, setAnswers] = useState(["Desert modern", "A pool", "Outdoors & trails", "$750K to $1.25M", "No preference"]);
   const current = steps[step];
   const select = (option: string) => setAnswers((previous) => previous.map((answer, index) => index === step ? option : answer));
   const next = () => {
