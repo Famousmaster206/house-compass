@@ -3,10 +3,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import json
 import os
-from dotenv import load_dotenv
 import google.generativeai as genai
-
-load_dotenv()
 
 from rentcast import get_market_statistics, is_configured as rentcast_is_configured, RentCastError
 from az_cities import CITY_ZIP_CODES, get_zip_for_city
@@ -39,7 +36,6 @@ def get_recommendations():
     # For now, just return all properties so frontend can test
     return jsonify(properties)
 
-<<<<<<< HEAD
 
 def _extract_rent_by_bedrooms(rentcast_payload):
     """Pulls a simple {bedrooms: averageRent} map out of a RentCast /markets response."""
@@ -64,8 +60,8 @@ def rentcast_city(slug):
     """Live rent data for one Arizona city, proxied through RentCast.
 
     The RentCast API key never leaves this server — the frontend only ever
-    calls this route. Falls back to a clear 503 (not a crash) if the key
-    isn't configured or RentCast is unreachable, so the frontend can fall
+    calls this route. Falls back to a clear error status (not a crash) if the
+    key isn't configured or RentCast is unreachable, so the frontend can fall
     back to its own static sample data.
     """
     zip_code = get_zip_for_city(slug)
@@ -105,7 +101,6 @@ def rentcast_all_cities():
 def rentcast_status():
     return jsonify({"configured": rentcast_is_configured()})
 
-=======
 @app.route('/api/ai-overview', methods=['POST'])
 def generate_ai_overview():
     """Generate an AI-powered overview of the user's housing affordability based on their calculation results."""
@@ -254,7 +249,6 @@ def calculate_net_spending():
             "error": f"Calculation failed: {str(e)}",
             "success": False
         }), 500
->>>>>>> acc7519579e183daf25203ba7f1c05dc9de2f808
 
 if __name__ == '__main__':
     # Runs on port 5000 by default
