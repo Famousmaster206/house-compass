@@ -24,15 +24,15 @@ import { formatCurrency } from "@/lib/utils/format";
 import type { HomeSearchAnswers } from "@/components/home-search/PreferenceWizard";
 
 const gallery = [
-  ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85", "Contemporary luxury home exterior"],
-  ["https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=85", "Bright modern living room"],
-  ["https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=900&q=85", "Modern kitchen"],
-  ["https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=900&q=85", "Refined primary bedroom"],
-  ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=85", "Pool at a luxury home"],
+  ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85", "Desert modern home exterior"],
+  ["https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=85", "Main living room"],
+  ["https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=900&q=85", "Modern kitchen"],
+  ["https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=900&q=85", "Master bedroom"],
+  ["https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=900&q=85", "Backyard patio"],
 ] as const;
 
 function parseBudgetLabel(label: string): number | undefined {
-  // "Up to $750K" / "$750K–$1.25M" / "$1.25M+" -> upper bound in dollars
+  // "Up to $750K" / "$750K to $1.25M" / "$1.25M+" -> upper bound in dollars
   const matches = label.match(/\$([\d.]+)([KM])/g);
   if (!matches || matches.length === 0) return undefined;
   const last = matches[matches.length - 1];
@@ -176,7 +176,7 @@ export function PropertySummary({
             </div>
           ))}
           <button className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-2 text-sm font-bold text-[#243b2f] shadow-lg backdrop-blur">
-            <Expand size={16} />Gallery photos are illustrative
+            <Expand size={16} />Photos are for reference, not this exact home
           </button>
         </div>
 
@@ -190,8 +190,8 @@ export function PropertySummary({
             </h1>
             <p className="mt-4 max-w-2xl text-lg leading-8 text-[#68736a]">
               {listing.daysOnMarket != null
-                ? `On the market for ${listing.daysOnMarket} day${listing.daysOnMarket === 1 ? "" : "s"} — a real, active listing sourced from RentCast.`
-                : "A real, active listing sourced from RentCast."}
+                ? `An active listing pulled from RentCast, on the market for ${listing.daysOnMarket} day${listing.daysOnMarket === 1 ? "" : "s"}.`
+                : "An active listing pulled from RentCast."}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               {homeFacts.map(({ icon: Icon, label }) => (
@@ -231,7 +231,7 @@ export function PropertySummary({
               ))}
             </div>
             <p className="mt-4 text-xs text-white/50">
-              Cost estimate is illustrative (20% down, 30-yr @ ~6.5%) — not a loan quote.
+              Rough estimate assuming 20% down on a 30-year loan at 6.5%. Not an actual loan quote.
             </p>
             <button className="mt-7 w-full rounded-full bg-[#ec8240] py-3.5 font-extrabold transition hover:bg-[#f0965d]">
               Schedule a tour
@@ -285,7 +285,7 @@ function PropertyAiOverview({ listing, monthlyPayment }: { listing: SaleListing;
 
       {!hasRequested && !overview && (
         <p className="mt-4 text-sm text-[#3a4e40]">
-          Get an AI-generated read on this property — what stands out, what to check, and how it fits your budget.
+          Get a quick read on this property: what stands out, what to check before you commit, and whether it fits your budget.
         </p>
       )}
 

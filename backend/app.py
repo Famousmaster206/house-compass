@@ -270,7 +270,7 @@ def generate_ai_overview():
     bedrooms = data.get('bedrooms', 1)
     
     # Build the prompt
-    prompt = f"""Based on the following housing affordability calculation for someone living in {city_name}, provide a personalized AI-powered financial overview and insights. Be conversational, encouraging, and practical.
+    prompt = f"""You're looking at a housing affordability calculation for someone living in {city_name}. Write a short, plain-spoken financial overview based on it. No greetings, no "Hello there," no exclamation points, no headers or markdown formatting, just direct paragraphs.
 
 USER'S FINANCIAL SITUATION:
 - Monthly Net Income: ${monthly_income:,}
@@ -292,14 +292,13 @@ HOUSEHOLD DETAILS:
 - Housing: {bedrooms} bedroom(s)
 - Transportation: {"Has a car" if has_car else "No car (public transit/rideshare)"}
 
-Please provide:
-1. A brief overall assessment of their financial position in {city_name}
-2. Key insights about their expense distribution (what stands out?)
-3. Specific, actionable recommendations for optimizing their budget
-4. Potential areas of concern or opportunities
-5. Encouragement and context about their affordability level
+Cover, in 3-4 short paragraphs:
+1. Where they actually stand financially in {city_name}
+2. What their expense breakdown reveals (the real standout, not a generic list)
+3. One or two specific things they could change, with a rough sense of what it would save
+4. Anything worth flagging as a risk or a strength
 
-Keep the tone friendly, practical, and empowering. Focus on actionable insights they can use."""
+Write like a knowledgeable friend giving them a straight answer, not a customer service bot."""
 
     try:
         model = genai.GenerativeModel('gemini-2.5-flash')
@@ -343,7 +342,7 @@ def generate_ai_property_overview():
     monthly_income = data.get('monthlyIncome')
     estimated_monthly_payment = data.get('estimatedMonthlyPayment')
 
-    prompt = f"""Based on the following real for-sale property listing in Arizona, provide a short, friendly, practical AI-powered overview for a prospective buyer.
+    prompt = f"""Here's a real for-sale listing in Arizona. Write a short, straight-talking read on it for someone considering it. No greetings, no exclamation points, no headers or markdown, just direct paragraphs.
 
 PROPERTY:
 - Address: {address}
@@ -355,13 +354,13 @@ PROPERTY:
 {f"- Buyer's monthly income: ${monthly_income:,}" if monthly_income else ""}
 {f"- Estimated monthly payment: ${estimated_monthly_payment:,}" if estimated_monthly_payment else ""}
 
-Please provide, in a short conversational tone (3-4 short paragraphs, no headers):
-1. A quick read on whether this looks like a solid opportunity (price relative to size, days on market as a freshness/negotiation signal)
-2. What stands out about this property on paper
-3. One or two practical things the buyer should check or ask about
-4. If income/payment info was given, a brief affordability comment
+In 3-4 short paragraphs, cover:
+1. Whether the price makes sense for the size, and what the days-on-market number suggests (fresh listing vs. sat around, possible negotiating room)
+2. What actually stands out here, good or bad
+3. One or two specific things worth checking before making an offer
+4. If income/payment numbers were given, whether this looks affordable for them
 
-Keep it grounded and honest — do not invent facts not given above, and do not give exact financial/legal advice."""
+Stick to what's given here. Don't invent details, and don't give exact financial or legal advice."""
 
     try:
         model = genai.GenerativeModel('gemini-2.5-flash')

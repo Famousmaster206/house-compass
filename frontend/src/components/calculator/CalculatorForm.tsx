@@ -181,7 +181,7 @@ export function CalculatorForm() {
         {step === 1 && (
           <div className="flex flex-col gap-5">
             <Select
-              label="Apartment size"
+              label="House/apartment size"
               value={String(input.bedrooms)}
               onChange={(e) => update("bedrooms", Number(e.target.value) as 1 | 3)}
               options={[
@@ -242,7 +242,7 @@ export function CalculatorForm() {
                   {!isApiConfigured() && (
                     <p className="flex items-center gap-2 text-xs text-muted">
                       <AlertCircle size={14} aria-hidden="true" />
-                      Address lookup isn&apos;t configured right now — use the manual option instead.
+                      Address lookup isn&apos;t configured right now, so use the manual option instead.
                     </p>
                   )}
                   <div className="flex gap-2">
@@ -271,7 +271,7 @@ export function CalculatorForm() {
                   </Button>
                   {addressLookup === "done" && addressLookupRent && (
                     <p className="text-sm font-semibold text-comfortable">
-                      Found: {formatCurrency(addressLookupRent)}/month — applied to your calculation.
+                      Found {formatCurrency(addressLookupRent)}/month. Applied to your calculation.
                     </p>
                   )}
                   {addressLookup === "error" && (
