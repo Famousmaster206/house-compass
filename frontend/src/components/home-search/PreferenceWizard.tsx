@@ -29,7 +29,7 @@ const steps = [
     eyebrow: "Your rhythm",
     title: "How do you want to spend your weekends?",
     options: [
-      { label: "Outdoors & trails", image: "https://images.unsplash.com/photo-1469550302324-4fc642646698?auto=format&fit=crop&w=900&q=80", icon: Mountain },
+      { label: "Outdoors & trails", image: "https://images.unsplash.com/photo-1533240332313-0db49b459ad6?auto=format&fit=crop&w=900&q=80", icon: Mountain },
       { label: "Dining & design", image: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=80", icon: Sparkles },
       { label: "Quiet and tucked away", image: "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=900&q=80", icon: Sun },
       { label: "No preference", image: "https://images.unsplash.com/photo-1594818379496-da1e345b0ded?auto=format&fit=crop&w=900&q=80", icon: Sparkles },
@@ -49,7 +49,7 @@ const steps = [
     eyebrow: "Your city",
     title: "Where in Arizona?",
     options: [
-      { label: "Phoenix", slug: "phoenix", image: "https://images.unsplash.com/photo-1469550302324-4fc642646698?auto=format&fit=crop&w=900&q=80", sublabel: "Big-city energy" },
+      { label: "Phoenix", slug: "phoenix", image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=900&q=80", sublabel: "Big-city energy" },
       { label: "Scottsdale", slug: "scottsdale", image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=900&q=80", sublabel: "Resort-town polish" },
       { label: "Tempe", slug: "tempe", image: "https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=900&q=80", sublabel: "Walkable & youthful" },
       { label: "No preference", slug: undefined, image: "https://images.unsplash.com/photo-1594818379496-da1e345b0ded?auto=format&fit=crop&w=900&q=80", sublabel: "We'll suggest one" },
