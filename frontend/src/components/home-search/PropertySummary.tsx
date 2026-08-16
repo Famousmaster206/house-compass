@@ -163,9 +163,6 @@ export function PropertySummary({
             <h1 className="mt-2 text-4xl font-extrabold tracking-[-0.05em] text-[#253a2e] sm:text-5xl">
               {listing.address}
             </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-[#68736a]">
-              Sample listing for this demo, on the market for {listing.daysOnMarket} days.
-            </p>
 
             <div className="mt-7 flex flex-wrap gap-3">
               {homeFacts.map(({ icon: Icon, label }) => (
