@@ -301,9 +301,9 @@ Cover, in 3-4 short paragraphs:
 Write like a knowledgeable friend giving them a straight answer, not a customer service bot."""
 
     try:
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-3.1-flash-lite')
         response = model.generate_content(prompt)
-        
+
         return jsonify({
             "overview": response.text,
             "success": True
@@ -363,7 +363,7 @@ In 3-4 short paragraphs, cover:
 Stick to what's given here. Don't invent details, and don't give exact financial or legal advice."""
 
     try:
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-3.1-flash-lite')
         response = model.generate_content(prompt)
 
         return jsonify({
