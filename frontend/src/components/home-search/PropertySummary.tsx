@@ -21,22 +21,74 @@ import {
 import { generateAiPropertyOverview } from "@/lib/api/client";
 import { formatCurrency } from "@/lib/utils/format";
 
-// Sample/demo listing — hardcoded rather than pulled live from RentCast.
+// Sample/demo listings — hardcoded rather than pulled live from RentCast.
 // TODO: swap back to the live searchSaleListings() call once the RentCast
 // account has an active subscription (it currently returns 403
 // billing/subscription-inactive on every request).
-const SAMPLE_LISTING = {
-  address: "3305 E Cashman Dr, Phoenix, AZ 85050",
-  city: "Phoenix",
-  state: "AZ",
-  citySlug: "phoenix",
-  price: 749000,
-  bedrooms: 4,
-  bathrooms: 3,
-  squareFootage: 2620,
-  propertyType: "Single Family",
-  daysOnMarket: 14,
-};
+export const SAMPLE_LISTINGS = [
+  {
+    address: "3305 E Cashman Dr, Phoenix, AZ 85050",
+    city: "Phoenix",
+    state: "AZ",
+    citySlug: "phoenix",
+    price: 749000,
+    bedrooms: 4,
+    bathrooms: 3,
+    squareFootage: 2620,
+    propertyType: "Single Family",
+    daysOnMarket: 14,
+  },
+  {
+    address: "3505 E Pike St, Phoenix, AZ 85050",
+    city: "Phoenix",
+    state: "AZ",
+    citySlug: "phoenix",
+    price: 685000,
+    bedrooms: 4,
+    bathrooms: 2.5,
+    squareFootage: 2340,
+    propertyType: "Single Family",
+    daysOnMarket: 21,
+  },
+  {
+    address: "2929 W Yorkshire Dr, Phoenix, AZ 85027",
+    city: "Phoenix",
+    state: "AZ",
+    citySlug: "phoenix",
+    price: 519000,
+    bedrooms: 3,
+    bathrooms: 2,
+    squareFootage: 1780,
+    propertyType: "Single Family",
+    daysOnMarket: 9,
+  },
+  {
+    address: "1514 S Ficus Ave, Mesa, AZ 85202",
+    city: "Mesa",
+    state: "AZ",
+    citySlug: "mesa",
+    price: 462000,
+    bedrooms: 3,
+    bathrooms: 2,
+    squareFootage: 1615,
+    propertyType: "Single Family",
+    daysOnMarket: 27,
+  },
+  {
+    address: "2220 W Mission Ln, Phoenix, AZ 85021",
+    city: "Phoenix",
+    state: "AZ",
+    citySlug: "phoenix",
+    price: 574000,
+    bedrooms: 3,
+    bathrooms: 2,
+    squareFootage: 1920,
+    propertyType: "Single Family",
+    daysOnMarket: 5,
+  },
+] as const;
+
+export type SampleListing = (typeof SAMPLE_LISTINGS)[number];
 
 function estimateMonthlyPayment(price: number): number {
   // Simple 20%-down, 30-yr @ ~6.5% amortization estimate for the cost sidebar —
@@ -48,9 +100,16 @@ function estimateMonthlyPayment(price: number): number {
   return Math.round(mortgage);
 }
 
-export function PropertySummary({ onRestart }: { onRestart: () => void }) {
+export function PropertySummary({
+  listing,
+  onRestart,
+  onBackToResults,
+}: {
+  listing: SampleListing;
+  onRestart: () => void;
+  onBackToResults: () => void;
+}) {
   const router = useRouter();
-  const listing = SAMPLE_LISTING;
   const price = listing.price;
   const monthlyPayment = estimateMonthlyPayment(price);
   const costs = [
@@ -79,9 +138,14 @@ export function PropertySummary({ onRestart }: { onRestart: () => void }) {
   return (
     <section className="bg-[#faf8f4] pb-20">
       <div className="mx-auto max-w-7xl px-5 pt-8 sm:px-8">
-        <button onClick={onRestart} className="mb-6 inline-flex items-center gap-2 text-sm font-bold text-[#637166] transition hover:text-[#263c30]">
-          <ArrowLeft size={17} />Start a new search
-        </button>
+        <div className="mb-6 flex flex-wrap items-center gap-5">
+          <button onClick={onBackToResults} className="inline-flex items-center gap-2 text-sm font-bold text-[#637166] transition hover:text-[#263c30]">
+            <ArrowLeft size={17} />Back to matches
+          </button>
+          <button onClick={onRestart} className="text-sm font-bold text-[#637166] transition hover:text-[#263c30]">
+            Start a new search
+          </button>
+        </div>
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2 rounded-full bg-[#e9f0e5] px-4 py-2 text-sm font-extrabold text-[#35543d]">
             <Compass size={16} />Your House Compass match
@@ -167,7 +231,7 @@ function PropertyAiOverview({
   listing,
   monthlyPayment,
 }: {
-  listing: typeof SAMPLE_LISTING;
+  listing: SampleListing;
   monthlyPayment: number;
 }) {
   const [overview, setOverview] = useState("");
