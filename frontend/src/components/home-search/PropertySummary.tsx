@@ -167,8 +167,6 @@ export function PropertySummary({
               Sample listing for this demo, on the market for {listing.daysOnMarket} days.
             </p>
 
-            <PropertyAiOverview listing={listing} monthlyPayment={monthlyPayment} />
-
             <div className="mt-7 flex flex-wrap gap-3">
               {homeFacts.map(({ icon: Icon, label }) => (
                 <span key={label} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-bold text-[#3a4e40] shadow-sm ring-1 ring-[#e4ddd1]">
@@ -183,6 +181,8 @@ export function PropertySummary({
             >
               <Calculator size={18} aria-hidden="true" /> Calculate my costs for this home
             </button>
+
+            <PropertyAiOverview listing={listing} monthlyPayment={monthlyPayment} />
           </div>
 
           <aside className="rounded-[2rem] bg-[#243b2f] p-7 text-white shadow-xl shadow-[#243b2f]/15">
