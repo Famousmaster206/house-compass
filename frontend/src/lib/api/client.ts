@@ -55,14 +55,18 @@ export async function apiPost<T>(path: string, body: unknown, init?: RequestInit
   if (!isApiConfigured()) {
     throw new ApiError("Backend API is not configured (no NEXT_PUBLIC_API_BASE_URL or NEXT_PUBLIC_API_SAME_ORIGIN)");
   }
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const url = `${API_BASE_URL}${path}`;
+  const res = await fetch(url, {
     ...init,
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json", ...init?.headers },
     body: JSON.stringify(body),
   });
   if (!res.ok) {
-    throw new ApiError(`Backend request failed: ${res.status} ${res.statusText}`, res.status);
+    const bodyText = await res.text().catch(() => "<unreadable>");
+    // eslint-disable-next-line no-console
+    console.error("[apiPost] failed", { url, status: res.status, statusText: res.statusText, redirected: res.redirected, finalUrl: res.url, bodyText });
+    throw new ApiError(`Backend request failed: ${res.status} ${res.statusText} — POST ${url} (resolved: ${res.url})`, res.status);
   }
   return res.json() as Promise<T>;
 }
